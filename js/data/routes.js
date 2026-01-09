@@ -1,6 +1,6 @@
 // Kayaking Routes Database
 // Add your favorite kayaking routes from Strava, Outdoor Active, or other platforms
-// Format: { name, lat, lon, url, type, description (optional), distance (optional), difficulty (optional) }
+// Format: { name, lat, lon, url, type, description (optional), distance (optional), difficulty (optional), goodConditions (optional), trickyConditions (optional) }
 
 const KAYAKING_ROUTES = [
     // Example format - add your own routes below:
@@ -35,7 +35,7 @@ const KAYAKING_ROUTES = [
     lon: -3.5794,
     url: "https://www.strava.com/activities/14806705621",
     type: "strava", // "strava", "outdooractive", "other"
-    description: "Beautiful estaury paddle. Paddle past Old Mill Creek or up it to add distance then on to Greenways the home of Agatha Christie then Dittisham. Be careful of river traffice especially is crossing the river.",
+    description: "Beautiful estaury paddle. Paddle past Old Mill Creek or up it to add distance then on to Greenways the home of Agatha Christie then Dittisham. Be careful of river traffic especially if crossing the river.",
     distance: "12km",
     difficulty: "Easy"
     },

@@ -107,6 +107,23 @@ class RoutesViewer {
                         <span class="route-detail"><strong>Platform:</strong> ${platform}</span>
                     </div>
 
+                    ${route.goodConditions || route.trickyConditions ? `
+                        <div class="route-conditions">
+                            ${route.goodConditions ? `
+                                <div class="route-conditions-good">
+                                    <strong>✅ Good Conditions:</strong>
+                                    <p>${route.goodConditions}</p>
+                                </div>
+                            ` : ''}
+                            ${route.trickyConditions ? `
+                                <div class="route-conditions-tricky">
+                                    <strong>⚠️ Tricky Conditions:</strong>
+                                    <p>${route.trickyConditions}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+
                     <div class="route-actions">
                         <a href="${route.url}" target="_blank" rel="noopener noreferrer" class="btn-route">
                             View Route on ${platform}

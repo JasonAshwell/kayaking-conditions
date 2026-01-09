@@ -141,6 +141,56 @@
     color: #333;
 }
 
+.route-conditions {
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.route-conditions-good,
+.route-conditions-tricky {
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.route-conditions-good {
+    background-color: #e8f5e9;
+    border-color: #28a745;
+}
+
+.route-conditions-good strong {
+    color: #1e7e34;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.route-conditions-good p {
+    margin: 0;
+    color: #2d5016;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.route-conditions-tricky {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+}
+
+.route-conditions-tricky strong {
+    color: #856404;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.route-conditions-tricky p {
+    margin: 0;
+    color: #856404;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
 .route-actions {
     display: flex;
     gap: 8px;

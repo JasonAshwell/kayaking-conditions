@@ -24,9 +24,11 @@ const KAYAKING_ROUTES = [
         lon: -3.5794,
         url: "https://www.strava.com/routes/123456789",
         type: "strava",
-        description: "Beautiful upstream paddle along River Dart. Best at high tide. Sheltered route suitable for beginners.",
+        description: "Beautiful upstream paddle along River Dart. Sheltered route suitable for beginners.",
         distance: "8km",
-        difficulty: "Easy"
+        difficulty: "Easy",
+        goodConditions: "High tide with light winds from NE or E. Spring tides give more water over mud banks.",
+        trickyConditions: "Strong SW winds funnel up the valley. Low tide exposes mud banks and narrows the channel."
     },
     {
         name: "Salcombe Estuary Explorer",
@@ -36,7 +38,9 @@ const KAYAKING_ROUTES = [
         type: "outdooractive",
         description: "Explore the stunning Salcombe estuary with stops at sandy beaches. Full circuit of inner estuary.",
         distance: "12km",
-        difficulty: "Moderate"
+        difficulty: "Moderate",
+        goodConditions: "Mid to high tide. Light to moderate winds. Early morning for calmer water.",
+        trickyConditions: "Strong southerly winds cause rough conditions at harbor entrance. Busy with boat traffic in summer."
     },
     {
         name: "Start Point Coastal Paddle",
@@ -46,7 +50,9 @@ const KAYAKING_ROUTES = [
         type: "other",
         description: "Advanced coastal route around Start Point. Strong tidal currents. Experienced paddlers only.",
         distance: "15km",
-        difficulty: "Advanced"
+        difficulty: "Advanced",
+        goodConditions: "Slack water at Start Point. Light offshore winds. Good visibility. Calm sea state.",
+        trickyConditions: "Tidal race at Start Point (avoid 3hrs either side of high water). Strong SW winds create rough seas. Poor visibility dangerous due to shipping."
     }
 ];
 ```
@@ -63,6 +69,8 @@ const KAYAKING_ROUTES = [
 | `description` | No | Route details and notes | "Beautiful upstream paddle..." |
 | `distance` | No | Route distance | "8km", "5 miles" |
 | `difficulty` | No | Difficulty level | "Easy", "Moderate", "Advanced" |
+| `goodConditions` | No | When to paddle this route | "High tide, light NE winds" |
+| `trickyConditions` | No | Conditions to avoid | "Strong SW winds, low tide" |
 
 ## Supported Platforms
 
@@ -133,6 +141,84 @@ Include helpful information:
 - "Busy with commercial traffic"
 - "No landing spots for 5km"
 
+## Good Conditions & Tricky Conditions
+
+The `goodConditions` and `trickyConditions` fields help paddlers understand when to (and when not to) paddle a route.
+
+### Good Conditions
+
+Describe the ideal conditions for this route:
+
+**Tidal State**:
+- "High tide for deepest water"
+- "Mid tide gives best flow"
+- "Slack water at headland"
+- "2 hours after high water"
+
+**Wind**:
+- "Light NE winds (offshore)"
+- "Moderate E or SE winds"
+- "Calm or light winds only"
+- "Wind <10 knots"
+
+**Sea State**:
+- "Calm sea, <0.5m swell"
+- "Flat conditions"
+- "Protected from swell"
+
+**Time of Day**:
+- "Early morning for calm water"
+- "Best paddled at dawn"
+- "Avoid midday boat traffic"
+
+**Season**:
+- "Spring tides give more water"
+- "Summer for warmer water"
+- "Best March-October"
+
+### Tricky Conditions
+
+Warn paddlers about conditions to avoid:
+
+**Tidal Hazards**:
+- "Tidal race at Start Point (avoid 3hrs either side of HW)"
+- "Strong ebb creates overfalls"
+- "Low tide exposes rocks and mud"
+- "Spring tides create strong currents"
+
+**Wind Warnings**:
+- "SW winds funnel up valley"
+- "Onshore winds create surf"
+- "Wind against tide = rough seas"
+- "Exposed to southerly gales"
+
+**Sea State**:
+- "Large swell makes landing difficult"
+- "Confused seas in wind-against-tide"
+- "Reef breaks in big swells"
+
+**Other Hazards**:
+- "Busy with boat traffic in summer"
+- "Commercial shipping lanes"
+- "Poor visibility dangerous"
+- "No landing spots for 8km"
+
+**Example Entry**:
+```javascript
+{
+    name: "Bigbury to Hope Cove",
+    lat: 50.2839,
+    lon: -3.8943,
+    url: "https://www.strava.com/activities/123456",
+    type: "strava",
+    description: "Coastal paddle around Bolt Tail headland with stunning views.",
+    distance: "10km",
+    difficulty: "Intermediate",
+    goodConditions: "Slack water at Bolt Tail. Light offshore (N or NE) winds. Good visibility. Calm sea state <1m. Best 2hrs either side of slack water.",
+    trickyConditions: "Strong tidal streams around Bolt Tail (up to 3 knots). SW winds create rough seas and make landing at Hope Cove difficult. Avoid in swell >1.5m. Commercial fishing boats in area."
+}
+```
+
 ## Difficulty Levels
 
 Suggested classification:
@@ -157,7 +243,9 @@ Suggested classification:
     type: "strava",
     description: "Easy sheltered paddle around Fowey harbour. Perfect for beginners. 1-2 hours. Launch from Caffa Mill slip.",
     distance: "5km",
-    difficulty: "Easy"
+    difficulty: "Easy",
+    goodConditions: "Any tide state works. Best in light winds <10 knots. Sheltered from most wind directions.",
+    trickyConditions: "Watch for ferries and commercial traffic in main channel. Strong SW winds can make return challenging."
 }
 ```
 
@@ -171,7 +259,9 @@ Suggested classification:
     type: "outdooractive",
     description: "Stunning coastal paddle from Prawle Point to Salcombe. Requires calm conditions. Spectacular cliff scenery. Seals and seabirds common. Must have solid self-rescue skills. Plan timing for tidal assistance.",
     distance: "18km",
-    difficulty: "Advanced"
+    difficulty: "Advanced",
+    goodConditions: "Calm seas <1m. Light to moderate offshore winds. Good visibility. Slack water or tidal assistance. Best on neap tides.",
+    trickyConditions: "Strong tidal streams around Prawle Point (up to 4 knots on springs). SW winds create rough seas and surf. No landing spots for 12km in rough conditions. Shipping traffic offshore."
 }
 ```
 
