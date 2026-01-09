@@ -46,6 +46,14 @@ const MANUAL_WEBCAMS = [
         type: "image",
         display: "newtab"  // Opens directly in new tab (doesn't embed well)
     },
+	{
+        name: "Plymouth Sound",
+       lat: 50.3559,
+        lon: -4.1425,
+        url: "https://www.camsecure.co.uk/PlymouthSound.html",
+        type: "image",
+        display: "newtab"  // Opens directly in new tab (doesn't embed well)
+    },
 
     // Wales
     {
