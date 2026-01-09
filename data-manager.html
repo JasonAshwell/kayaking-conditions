@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayaking Data Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -340,6 +342,74 @@
         .copy-btn {
             margin-top: 10px;
         }
+
+        .map-preview {
+            height: 300px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .map-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .map-hint {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: -3px;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        .form-mode-indicator {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .form-mode-indicator.active {
+            display: block;
+        }
+
+        .form-mode-indicator strong {
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -362,8 +432,19 @@
                 <strong>Manage Locations:</strong> Add your favorite kayaking spots with descriptions, coordinates, and images.
             </div>
 
+            <div class="file-actions">
+                <label class="file-input-wrapper btn btn-secondary">
+                    📁 Import from File
+                    <input type="file" accept=".js" onchange="importLocationsFile(event)">
+                </label>
+                <button class="btn btn-success" onclick="downloadLocationsFile()">💾 Download File</button>
+            </div>
+
             <div class="form-section">
                 <h3>Add/Edit Location</h3>
+                <div class="form-mode-indicator" id="location-edit-mode">
+                    <strong>✏️ Edit Mode:</strong> Updating existing location. <a href="#" onclick="cancelLocationEdit(); return false;">Cancel</a>
+                </div>
                 <form id="location-form">
                     <div class="form-row">
                         <label>Location Name *</label>
@@ -374,14 +455,20 @@
                     <div class="form-grid">
                         <div class="form-row">
                             <label>Latitude *</label>
-                            <input type="number" step="any" id="loc-lat" required>
+                            <input type="number" step="any" id="loc-lat" required oninput="updateLocationMap()">
                             <small>e.g., 50.3515</small>
                         </div>
                         <div class="form-row">
                             <label>Longitude *</label>
-                            <input type="number" step="any" id="loc-lon" required>
+                            <input type="number" step="any" id="loc-lon" required oninput="updateLocationMap()">
                             <small>e.g., -3.5794</small>
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="map-label">📍 Map Preview</label>
+                        <div class="map-hint">💡 Click anywhere on the map to drop a pin and set coordinates</div>
+                        <div id="location-map" class="map-preview"></div>
                     </div>
 
                     <div class="form-row">
@@ -403,7 +490,7 @@
                     </div>
 
                     <div class="btn-actions">
-                        <button type="submit" class="btn btn-primary">Add Location</button>
+                        <button type="submit" class="btn btn-primary" id="location-submit-btn">Add Location</button>
                         <button type="button" class="btn btn-secondary" onclick="clearLocationForm()">Clear Form</button>
                     </div>
                 </form>
@@ -424,8 +511,19 @@
                 <strong>Manage Routes:</strong> Add kayaking routes from Strava, Outdoor Active, or custom sources.
             </div>
 
+            <div class="file-actions">
+                <label class="file-input-wrapper btn btn-secondary">
+                    📁 Import from File
+                    <input type="file" accept=".js" onchange="importRoutesFile(event)">
+                </label>
+                <button class="btn btn-success" onclick="downloadRoutesFile()">💾 Download File</button>
+            </div>
+
             <div class="form-section">
                 <h3>Add/Edit Route</h3>
+                <div class="form-mode-indicator" id="route-edit-mode">
+                    <strong>✏️ Edit Mode:</strong> Updating existing route. <a href="#" onclick="cancelRouteEdit(); return false;">Cancel</a>
+                </div>
                 <form id="route-form">
                     <div class="form-row">
                         <label>Route Name *</label>
@@ -436,12 +534,18 @@
                     <div class="form-grid">
                         <div class="form-row">
                             <label>Latitude *</label>
-                            <input type="number" step="any" id="route-lat" required>
+                            <input type="number" step="any" id="route-lat" required oninput="updateRouteMap()">
                         </div>
                         <div class="form-row">
                             <label>Longitude *</label>
-                            <input type="number" step="any" id="route-lon" required>
+                            <input type="number" step="any" id="route-lon" required oninput="updateRouteMap()">
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="map-label">📍 Map Preview</label>
+                        <div class="map-hint">💡 Click anywhere on the map to drop a pin and set coordinates</div>
+                        <div id="route-map" class="map-preview"></div>
                     </div>
 
                     <div class="form-grid">
@@ -497,7 +601,7 @@
                     </div>
 
                     <div class="btn-actions">
-                        <button type="submit" class="btn btn-primary">Add Route</button>
+                        <button type="submit" class="btn btn-primary" id="route-submit-btn">Add Route</button>
                         <button type="button" class="btn btn-secondary" onclick="clearRouteForm()">Clear Form</button>
                     </div>
                 </form>
@@ -518,8 +622,19 @@
                 <strong>Manage Parking:</strong> Add custom parking locations near kayaking spots.
             </div>
 
+            <div class="file-actions">
+                <label class="file-input-wrapper btn btn-secondary">
+                    📁 Import from File
+                    <input type="file" accept=".js" onchange="importParkingFile(event)">
+                </label>
+                <button class="btn btn-success" onclick="downloadParkingFile()">💾 Download File</button>
+            </div>
+
             <div class="form-section">
                 <h3>Add/Edit Parking</h3>
+                <div class="form-mode-indicator" id="parking-edit-mode">
+                    <strong>✏️ Edit Mode:</strong> Updating existing parking. <a href="#" onclick="cancelParkingEdit(); return false;">Cancel</a>
+                </div>
                 <form id="parking-form">
                     <div class="form-row">
                         <label>Parking Name *</label>
@@ -530,12 +645,18 @@
                     <div class="form-grid">
                         <div class="form-row">
                             <label>Latitude *</label>
-                            <input type="number" step="any" id="park-lat" required>
+                            <input type="number" step="any" id="park-lat" required oninput="updateParkingMap()">
                         </div>
                         <div class="form-row">
                             <label>Longitude *</label>
-                            <input type="number" step="any" id="park-lon" required>
+                            <input type="number" step="any" id="park-lon" required oninput="updateParkingMap()">
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="map-label">📍 Map Preview</label>
+                        <div class="map-hint">💡 Click anywhere on the map to drop a pin and set coordinates</div>
+                        <div id="parking-map" class="map-preview"></div>
                     </div>
 
                     <div class="form-row">
@@ -558,7 +679,7 @@
                     </div>
 
                     <div class="btn-actions">
-                        <button type="submit" class="btn btn-primary">Add Parking</button>
+                        <button type="submit" class="btn btn-primary" id="parking-submit-btn">Add Parking</button>
                         <button type="button" class="btn btn-secondary" onclick="clearParkingForm()">Clear Form</button>
                     </div>
                 </form>
@@ -579,8 +700,19 @@
                 <strong>Manage Webcams:</strong> Add webcam links for live views near kayaking locations.
             </div>
 
+            <div class="file-actions">
+                <label class="file-input-wrapper btn btn-secondary">
+                    📁 Import from File
+                    <input type="file" accept=".js" onchange="importWebcamsFile(event)">
+                </label>
+                <button class="btn btn-success" onclick="downloadWebcamsFile()">💾 Download File</button>
+            </div>
+
             <div class="form-section">
                 <h3>Add/Edit Webcam</h3>
+                <div class="form-mode-indicator" id="webcam-edit-mode">
+                    <strong>✏️ Edit Mode:</strong> Updating existing webcam. <a href="#" onclick="cancelWebcamEdit(); return false;">Cancel</a>
+                </div>
                 <form id="webcam-form">
                     <div class="form-row">
                         <label>Webcam Name *</label>
@@ -591,12 +723,18 @@
                     <div class="form-grid">
                         <div class="form-row">
                             <label>Latitude *</label>
-                            <input type="number" step="any" id="cam-lat" required>
+                            <input type="number" step="any" id="cam-lat" required oninput="updateWebcamMap()">
                         </div>
                         <div class="form-row">
                             <label>Longitude *</label>
-                            <input type="number" step="any" id="cam-lon" required>
+                            <input type="number" step="any" id="cam-lon" required oninput="updateWebcamMap()">
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="map-label">📍 Map Preview</label>
+                        <div class="map-hint">💡 Click anywhere on the map to drop a pin and set coordinates</div>
+                        <div id="webcam-map" class="map-preview"></div>
                     </div>
 
                     <div class="form-grid">
@@ -622,7 +760,7 @@
                     </div>
 
                     <div class="btn-actions">
-                        <button type="submit" class="btn btn-primary">Add Webcam</button>
+                        <button type="submit" class="btn btn-primary" id="webcam-submit-btn">Add Webcam</button>
                         <button type="button" class="btn btn-secondary" onclick="clearWebcamForm()">Clear Form</button>
                     </div>
                 </form>
@@ -676,33 +814,6 @@
             });
         });
 
-        // Location Form
-        document.getElementById('location-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const location = {
-                name: document.getElementById('loc-name').value,
-                lat: parseFloat(document.getElementById('loc-lat').value),
-                lon: parseFloat(document.getElementById('loc-lon').value),
-                description: document.getElementById('loc-desc').value || undefined,
-                paddlingDescription: document.getElementById('loc-paddling-desc').value || undefined,
-                images: document.getElementById('loc-images').value
-                    .split('\n')
-                    .map(s => s.trim())
-                    .filter(s => s)
-            };
-
-            if (location.images.length === 0) delete location.images;
-
-            locations.push(location);
-            saveData();
-            renderLocationsList();
-            generateLocationsCode();
-            clearLocationForm();
-
-            alert('Location added successfully!');
-        });
-
         function clearLocationForm() {
             document.getElementById('location-form').reset();
         }
@@ -721,6 +832,7 @@
                         ${loc.description ? `<p>${loc.description}</p>` : ''}
                     </div>
                     <div class="data-item-actions">
+                        <button class="btn btn-edit" onclick="editLocation(${index})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteLocation(${index})">Delete</button>
                     </div>
                 `;
@@ -742,32 +854,6 @@
             document.getElementById('locations-output').textContent = code;
         }
 
-        // Route Form
-        document.getElementById('route-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const route = {
-                name: document.getElementById('route-name').value,
-                lat: parseFloat(document.getElementById('route-lat').value),
-                lon: parseFloat(document.getElementById('route-lon').value),
-                url: document.getElementById('route-url').value,
-                type: document.getElementById('route-type').value,
-                description: document.getElementById('route-description').value || undefined,
-                distance: document.getElementById('route-distance').value || undefined,
-                difficulty: document.getElementById('route-difficulty').value || undefined,
-                goodConditions: document.getElementById('route-good-conditions').value || undefined,
-                trickyConditions: document.getElementById('route-tricky-conditions').value || undefined
-            };
-
-            routes.push(route);
-            saveData();
-            renderRoutesList();
-            generateRoutesCode();
-            clearRouteForm();
-
-            alert('Route added successfully!');
-        });
-
         function clearRouteForm() {
             document.getElementById('route-form').reset();
         }
@@ -786,6 +872,7 @@
                         <p>Lat: ${route.lat}, Lon: ${route.lon}</p>
                     </div>
                     <div class="data-item-actions">
+                        <button class="btn btn-edit" onclick="editRoute(${index})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteRoute(${index})">Delete</button>
                     </div>
                 `;
@@ -807,27 +894,6 @@
             document.getElementById('routes-output').textContent = code;
         }
 
-        // Parking Form
-        document.getElementById('parking-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const park = {
-                name: document.getElementById('park-name').value,
-                lat: parseFloat(document.getElementById('park-lat').value),
-                lon: parseFloat(document.getElementById('park-lon').value),
-                description: document.getElementById('park-description').value || undefined,
-                type: document.getElementById('park-type').value || undefined
-            };
-
-            parking.push(park);
-            saveData();
-            renderParkingList();
-            generateParkingCode();
-            clearParkingForm();
-
-            alert('Parking location added successfully!');
-        });
-
         function clearParkingForm() {
             document.getElementById('parking-form').reset();
         }
@@ -846,6 +912,7 @@
                         <p>Lat: ${park.lat}, Lon: ${park.lon}</p>
                     </div>
                     <div class="data-item-actions">
+                        <button class="btn btn-edit" onclick="editParking(${index})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteParking(${index})">Delete</button>
                     </div>
                 `;
@@ -867,28 +934,6 @@
             document.getElementById('parking-output').textContent = code;
         }
 
-        // Webcam Form
-        document.getElementById('webcam-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const webcam = {
-                name: document.getElementById('cam-name').value,
-                lat: parseFloat(document.getElementById('cam-lat').value),
-                lon: parseFloat(document.getElementById('cam-lon').value),
-                url: document.getElementById('cam-url').value,
-                type: document.getElementById('cam-type').value,
-                display: document.getElementById('cam-display').value
-            };
-
-            webcams.push(webcam);
-            saveData();
-            renderWebcamsList();
-            generateWebcamsCode();
-            clearWebcamForm();
-
-            alert('Webcam added successfully!');
-        });
-
         function clearWebcamForm() {
             document.getElementById('webcam-form').reset();
         }
@@ -907,6 +952,7 @@
                         <p>Lat: ${cam.lat}, Lon: ${cam.lon}</p>
                     </div>
                     <div class="data-item-actions">
+                        <button class="btn btn-edit" onclick="editWebcam(${index})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteWebcam(${index})">Delete</button>
                     </div>
                 `;
@@ -953,8 +999,495 @@
             });
         }
 
+        // Edit mode tracking
+        let editingLocation = -1;
+        let editingRoute = -1;
+        let editingParking = -1;
+        let editingWebcam = -1;
+
+        // Maps for coordinate preview
+        let locationMap, routeMap, parkingMap, webcamMap;
+        let locationMarker, routeMarker, parkingMarker, webcamMarker;
+
+        // === EDIT FUNCTIONS ===
+
+        function editLocation(index) {
+            editingLocation = index;
+            const loc = locations[index];
+
+            document.getElementById('loc-name').value = loc.name;
+            document.getElementById('loc-lat').value = loc.lat;
+            document.getElementById('loc-lon').value = loc.lon;
+            document.getElementById('loc-desc').value = loc.description || '';
+            document.getElementById('loc-paddling-desc').value = loc.paddlingDescription || '';
+            document.getElementById('loc-images').value = loc.images ? loc.images.join('\n') : '';
+
+            document.getElementById('location-submit-btn').textContent = 'Update Location';
+            document.getElementById('location-edit-mode').classList.add('active');
+
+            updateLocationMap();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelLocationEdit() {
+            editingLocation = -1;
+            clearLocationForm();
+            document.getElementById('location-submit-btn').textContent = 'Add Location';
+            document.getElementById('location-edit-mode').classList.remove('active');
+        }
+
+        function editRoute(index) {
+            editingRoute = index;
+            const route = routes[index];
+
+            document.getElementById('route-name').value = route.name;
+            document.getElementById('route-lat').value = route.lat;
+            document.getElementById('route-lon').value = route.lon;
+            document.getElementById('route-url').value = route.url;
+            document.getElementById('route-type').value = route.type;
+            document.getElementById('route-description').value = route.description || '';
+            document.getElementById('route-distance').value = route.distance || '';
+            document.getElementById('route-difficulty').value = route.difficulty || '';
+            document.getElementById('route-good-conditions').value = route.goodConditions || '';
+            document.getElementById('route-tricky-conditions').value = route.trickyConditions || '';
+
+            document.getElementById('route-submit-btn').textContent = 'Update Route';
+            document.getElementById('route-edit-mode').classList.add('active');
+
+            updateRouteMap();
+
+            // Switch to routes tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="routes"]').classList.add('active');
+            document.getElementById('routes').classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelRouteEdit() {
+            editingRoute = -1;
+            clearRouteForm();
+            document.getElementById('route-submit-btn').textContent = 'Add Route';
+            document.getElementById('route-edit-mode').classList.remove('active');
+        }
+
+        function editParking(index) {
+            editingParking = index;
+            const park = parking[index];
+
+            document.getElementById('park-name').value = park.name;
+            document.getElementById('park-lat').value = park.lat;
+            document.getElementById('park-lon').value = park.lon;
+            document.getElementById('park-description').value = park.description || '';
+            document.getElementById('park-type').value = park.type || '';
+
+            document.getElementById('parking-submit-btn').textContent = 'Update Parking';
+            document.getElementById('parking-edit-mode').classList.add('active');
+
+            updateParkingMap();
+
+            // Switch to parking tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="parking"]').classList.add('active');
+            document.getElementById('parking').classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelParkingEdit() {
+            editingParking = -1;
+            clearParkingForm();
+            document.getElementById('parking-submit-btn').textContent = 'Add Parking';
+            document.getElementById('parking-edit-mode').classList.remove('active');
+        }
+
+        function editWebcam(index) {
+            editingWebcam = index;
+            const cam = webcams[index];
+
+            document.getElementById('cam-name').value = cam.name;
+            document.getElementById('cam-lat').value = cam.lat;
+            document.getElementById('cam-lon').value = cam.lon;
+            document.getElementById('cam-url').value = cam.url;
+            document.getElementById('cam-type').value = cam.type;
+            document.getElementById('cam-display').value = cam.display;
+
+            document.getElementById('webcam-submit-btn').textContent = 'Update Webcam';
+            document.getElementById('webcam-edit-mode').classList.add('active');
+
+            updateWebcamMap();
+
+            // Switch to webcams tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="webcams"]').classList.add('active');
+            document.getElementById('webcams').classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelWebcamEdit() {
+            editingWebcam = -1;
+            clearWebcamForm();
+            document.getElementById('webcam-submit-btn').textContent = 'Add Webcam';
+            document.getElementById('webcam-edit-mode').classList.remove('active');
+        }
+
+        // === MAP PREVIEW FUNCTIONS ===
+
+        function initMaps() {
+            // Initialize location map
+            locationMap = L.map('location-map').setView([50.3515, -3.5794], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(locationMap);
+            locationMarker = L.marker([50.3515, -3.5794]).addTo(locationMap);
+
+            // Click to set coordinates
+            locationMap.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lon = e.latlng.lng.toFixed(6);
+                document.getElementById('loc-lat').value = lat;
+                document.getElementById('loc-lon').value = lon;
+                locationMarker.setLatLng([lat, lon]);
+            });
+
+            // Initialize route map
+            routeMap = L.map('route-map').setView([50.3515, -3.5794], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(routeMap);
+            routeMarker = L.marker([50.3515, -3.5794]).addTo(routeMap);
+
+            // Click to set coordinates
+            routeMap.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lon = e.latlng.lng.toFixed(6);
+                document.getElementById('route-lat').value = lat;
+                document.getElementById('route-lon').value = lon;
+                routeMarker.setLatLng([lat, lon]);
+            });
+
+            // Initialize parking map
+            parkingMap = L.map('parking-map').setView([50.3515, -3.5794], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(parkingMap);
+            parkingMarker = L.marker([50.3515, -3.5794]).addTo(parkingMap);
+
+            // Click to set coordinates
+            parkingMap.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lon = e.latlng.lng.toFixed(6);
+                document.getElementById('park-lat').value = lat;
+                document.getElementById('park-lon').value = lon;
+                parkingMarker.setLatLng([lat, lon]);
+            });
+
+            // Initialize webcam map
+            webcamMap = L.map('webcam-map').setView([50.3515, -3.5794], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(webcamMap);
+            webcamMarker = L.marker([50.3515, -3.5794]).addTo(webcamMap);
+
+            // Click to set coordinates
+            webcamMap.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lon = e.latlng.lng.toFixed(6);
+                document.getElementById('cam-lat').value = lat;
+                document.getElementById('cam-lon').value = lon;
+                webcamMarker.setLatLng([lat, lon]);
+            });
+        }
+
+        function updateLocationMap() {
+            const lat = parseFloat(document.getElementById('loc-lat').value);
+            const lon = parseFloat(document.getElementById('loc-lon').value);
+
+            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                locationMarker.setLatLng([lat, lon]);
+                locationMap.setView([lat, lon], 13);
+            }
+        }
+
+        function updateRouteMap() {
+            const lat = parseFloat(document.getElementById('route-lat').value);
+            const lon = parseFloat(document.getElementById('route-lon').value);
+
+            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                routeMarker.setLatLng([lat, lon]);
+                routeMap.setView([lat, lon], 13);
+            }
+        }
+
+        function updateParkingMap() {
+            const lat = parseFloat(document.getElementById('park-lat').value);
+            const lon = parseFloat(document.getElementById('park-lon').value);
+
+            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                parkingMarker.setLatLng([lat, lon]);
+                parkingMap.setView([lat, lon], 13);
+            }
+        }
+
+        function updateWebcamMap() {
+            const lat = parseFloat(document.getElementById('cam-lat').value);
+            const lon = parseFloat(document.getElementById('cam-lon').value);
+
+            if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                webcamMarker.setLatLng([lat, lon]);
+                webcamMap.setView([lat, lon], 13);
+            }
+        }
+
+        // === FILE IMPORT/EXPORT FUNCTIONS ===
+
+        function downloadLocationsFile() {
+            const code = `const SAVED_LOCATIONS = ${JSON.stringify(locations, null, 4)};`;
+            downloadFile(code, 'locations.js');
+        }
+
+        function downloadRoutesFile() {
+            const code = `const KAYAKING_ROUTES = ${JSON.stringify(routes, null, 4)};`;
+            downloadFile(code, 'routes.js');
+        }
+
+        function downloadParkingFile() {
+            const code = `const CUSTOM_PARKING = ${JSON.stringify(parking, null, 4)};`;
+            downloadFile(code, 'parking.js');
+        }
+
+        function downloadWebcamsFile() {
+            const code = `const WEBCAMS = ${JSON.stringify(webcams, null, 4)};`;
+            downloadFile(code, 'webcams.js');
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importLocationsFile(event) {
+            importFile(event, (data) => {
+                locations = data;
+                saveData();
+                renderLocationsList();
+                generateLocationsCode();
+                alert('Locations imported successfully!');
+            }, 'SAVED_LOCATIONS');
+        }
+
+        function importRoutesFile(event) {
+            importFile(event, (data) => {
+                routes = data;
+                saveData();
+                renderRoutesList();
+                generateRoutesCode();
+                alert('Routes imported successfully!');
+            }, 'KAYAKING_ROUTES');
+        }
+
+        function importParkingFile(event) {
+            importFile(event, (data) => {
+                parking = data;
+                saveData();
+                renderParkingList();
+                generateParkingCode();
+                alert('Parking locations imported successfully!');
+            }, 'CUSTOM_PARKING');
+        }
+
+        function importWebcamsFile(event) {
+            importFile(event, (data) => {
+                webcams = data;
+                saveData();
+                renderWebcamsList();
+                generateWebcamsCode();
+                alert('Webcams imported successfully!');
+            }, 'WEBCAMS');
+        }
+
+        function importFile(event, callback, variableName) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+
+                    // Extract array from JavaScript file
+                    const regex = new RegExp(`const\\s+${variableName}\\s*=\\s*(\\[[\\s\\S]*?\\]);`, 'm');
+                    const match = content.match(regex);
+
+                    if (match && match[1]) {
+                        const data = JSON.parse(match[1]);
+                        if (Array.isArray(data)) {
+                            if (confirm(`Import ${data.length} items? This will replace your current data.`)) {
+                                callback(data);
+                            }
+                        } else {
+                            alert('Invalid file format: data is not an array');
+                        }
+                    } else {
+                        alert(`Could not find ${variableName} in the file`);
+                    }
+                } catch (error) {
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+
+            // Reset input to allow re-importing the same file
+            event.target.value = '';
+        }
+
+        // Update form submit handlers to support edit mode
+
+        // Location form handler
+        const originalLocationHandler = document.getElementById('location-form').onsubmit;
+        document.getElementById('location-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const location = {
+                name: document.getElementById('loc-name').value,
+                lat: parseFloat(document.getElementById('loc-lat').value),
+                lon: parseFloat(document.getElementById('loc-lon').value),
+                description: document.getElementById('loc-desc').value || undefined,
+                paddlingDescription: document.getElementById('loc-paddling-desc').value || undefined,
+                images: document.getElementById('loc-images').value
+                    .split('\n')
+                    .map(s => s.trim())
+                    .filter(s => s)
+            };
+
+            if (location.images.length === 0) delete location.images;
+
+            if (editingLocation >= 0) {
+                // Update existing
+                locations[editingLocation] = location;
+                cancelLocationEdit();
+                alert('Location updated successfully!');
+            } else {
+                // Add new
+                locations.push(location);
+                alert('Location added successfully!');
+            }
+
+            saveData();
+            renderLocationsList();
+            generateLocationsCode();
+            clearLocationForm();
+        });
+
+        // Route form handler
+        document.getElementById('route-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const route = {
+                name: document.getElementById('route-name').value,
+                lat: parseFloat(document.getElementById('route-lat').value),
+                lon: parseFloat(document.getElementById('route-lon').value),
+                url: document.getElementById('route-url').value,
+                type: document.getElementById('route-type').value,
+                description: document.getElementById('route-description').value || undefined,
+                distance: document.getElementById('route-distance').value || undefined,
+                difficulty: document.getElementById('route-difficulty').value || undefined,
+                goodConditions: document.getElementById('route-good-conditions').value || undefined,
+                trickyConditions: document.getElementById('route-tricky-conditions').value || undefined
+            };
+
+            if (editingRoute >= 0) {
+                // Update existing
+                routes[editingRoute] = route;
+                cancelRouteEdit();
+                alert('Route updated successfully!');
+            } else {
+                // Add new
+                routes.push(route);
+                alert('Route added successfully!');
+            }
+
+            saveData();
+            renderRoutesList();
+            generateRoutesCode();
+            clearRouteForm();
+        });
+
+        // Parking form handler
+        document.getElementById('parking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const park = {
+                name: document.getElementById('park-name').value,
+                lat: parseFloat(document.getElementById('park-lat').value),
+                lon: parseFloat(document.getElementById('park-lon').value),
+                description: document.getElementById('park-description').value || undefined,
+                type: document.getElementById('park-type').value || undefined
+            };
+
+            if (editingParking >= 0) {
+                // Update existing
+                parking[editingParking] = park;
+                cancelParkingEdit();
+                alert('Parking location updated successfully!');
+            } else {
+                // Add new
+                parking.push(park);
+                alert('Parking location added successfully!');
+            }
+
+            saveData();
+            renderParkingList();
+            generateParkingCode();
+            clearParkingForm();
+        });
+
+        // Webcam form handler
+        document.getElementById('webcam-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const webcam = {
+                name: document.getElementById('cam-name').value,
+                lat: parseFloat(document.getElementById('cam-lat').value),
+                lon: parseFloat(document.getElementById('cam-lon').value),
+                url: document.getElementById('cam-url').value,
+                type: document.getElementById('cam-type').value,
+                display: document.getElementById('cam-display').value
+            };
+
+            if (editingWebcam >= 0) {
+                // Update existing
+                webcams[editingWebcam] = webcam;
+                cancelWebcamEdit();
+                alert('Webcam updated successfully!');
+            } else {
+                // Add new
+                webcams.push(webcam);
+                alert('Webcam added successfully!');
+            }
+
+            saveData();
+            renderWebcamsList();
+            generateWebcamsCode();
+            clearWebcamForm();
+        });
+
         // Initialize on load
         loadData();
+
+        // Initialize maps after a short delay to ensure DOM is ready
+        setTimeout(() => {
+            initMaps();
+        }, 100);
     </script>
 </body>
 </html>

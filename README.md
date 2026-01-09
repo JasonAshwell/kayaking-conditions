@@ -56,24 +56,31 @@ WorldTides requires a free API key (1000 requests/month, permanently free):
 
 ## Management Tools
 
-### 🎛️ **Data Manager** (`data-manager.html`) - **NEW!**
+### 🎛️ **Data Manager** - **NEW!**
+
+**🌐 [Open Data Manager Online](https://jasonashwell.github.io/kayaking-conditions/data-manager.html)**
 
 **The easiest way to manage all your data!** Web-based portal for adding locations, routes, parking, and webcams without editing JavaScript files.
 
 **Features:**
+- 📍 **Click to drop pins** on interactive maps
+- ✏️ **Edit existing entries** with ease
+- 💾 **Import/Export files** directly
+- 📋 **Copy to clipboard** or download files
 - ✨ Visual forms with validation
-- 📋 One-click copy to clipboard
+- 🗺️ Live map preview for coordinates
 - 💾 Auto-save to browser storage
 - 📱 Mobile-friendly interface
 - 🚫 No JavaScript knowledge needed!
 
 **Quick Start:**
-1. Open `data-manager.html` in your browser
+1. [Open the Data Manager](https://jasonashwell.github.io/kayaking-conditions/data-manager.html) in your browser
 2. Use tabs to switch between Locations, Routes, Parking, Webcams
-3. Fill in forms and click "Add"
-4. Copy generated code
-5. Paste into your data files
-6. Push to GitHub
+3. Click on map to drop pins or fill in forms
+4. Edit existing entries or add new ones
+5. Download .js files or copy generated code
+6. Replace files in `js/data/` folder
+7. Push to GitHub
 
 See **[DATA-MANAGER-GUIDE.md](DATA-MANAGER-GUIDE.md)** for complete instructions.
 
