@@ -4,21 +4,30 @@
 
 const KAYAKING_ROUTES = [
     // Example format - add your own routes below:
-    // {
-    //     name: "Dartmouth to Dittisham",
-    //     lat: 50.3515,
-    //     lon: -3.5794,
-    //     url: "https://www.strava.com/routes/123456789",
-    //     type: "strava", // "strava", "outdooractive", "other"
-    //     description: "Beautiful upstream paddle along River Dart. Best at high tide.",
-    //     distance: "8km",
-    //     difficulty: "Easy"
-    // },
+    {
+    name: "Dartmouth to The Mew Stone",
+    lat: 50.3515,
+    lon: -3.5794,
+    url: "https://www.strava.com/activities/15072625030",
+    type: "strava", // "strava", "outdooractive", "other"
+    description: "Beautiful coastal paddle around the Mew Stone, be careful in some winds at it can be choppy getting to and around the Mew Stone. Remember not to interfere with the wildlife!",
+    distance: "12km",
+    difficulty: "Moderate"
+    },
 
     // ==========================================
     // ADD YOUR ROUTES HERE
     // ==========================================
-
+{
+    name: "Dartmouth to Blackpool Sands",
+    lat: 50.3515,
+    lon: -3.5794,
+    url: "https://www.strava.com/activities/14714946656",
+    type: "strava", // "strava", "outdooractive", "other"
+    description: "Beautiful coastal paddle with lots of rock hopping, stop and land at some of the coves if you want a break or to enjoy the stunning scenary or a swim. Either finish at Blackpool Sands and get a drink from the Cafe or return back to Dartmouth",
+    distance: "16km",
+    difficulty: "Moderate"
+    },
 
 ];
 
@@ -54,12 +63,8 @@ function findRoutesNear(lat, lon, radiusKm = 10) {
  * @returns {string} Icon HTML
  */
 function getRouteIcon(type) {
-    const icons = {
-        'strava': '🏃',
-        'outdooractive': '🥾',
-        'other': '🗺️'
-    };
-    return icons[type.toLowerCase()] || icons['other'];
+    // All routes are kayaking routes, so use kayak emoji
+    return '🛶';
 }
 
 /**
