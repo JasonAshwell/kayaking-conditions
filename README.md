@@ -56,6 +56,29 @@ WorldTides requires a free API key (1000 requests/month, permanently free):
 
 ## Management Tools
 
+### 🎛️ **Data Manager** (`data-manager.html`) - **NEW!**
+
+**The easiest way to manage all your data!** Web-based portal for adding locations, routes, parking, and webcams without editing JavaScript files.
+
+**Features:**
+- ✨ Visual forms with validation
+- 📋 One-click copy to clipboard
+- 💾 Auto-save to browser storage
+- 📱 Mobile-friendly interface
+- 🚫 No JavaScript knowledge needed!
+
+**Quick Start:**
+1. Open `data-manager.html` in your browser
+2. Use tabs to switch between Locations, Routes, Parking, Webcams
+3. Fill in forms and click "Add"
+4. Copy generated code
+5. Paste into your data files
+6. Push to GitHub
+
+See **[DATA-MANAGER-GUIDE.md](DATA-MANAGER-GUIDE.md)** for complete instructions.
+
+---
+
 ### 📸 Location Image Manager (`location-image-manager.html`)
 
 Easily add images to your saved locations with a user-friendly web interface:
