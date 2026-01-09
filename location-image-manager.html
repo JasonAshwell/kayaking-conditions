@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Image Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-area {
+            border: 3px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #e8ebff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .upload-area .limit {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            transition: all 0.2s ease;
+        }
+
+        .preview-item .remove-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+
+        .preview-item .image-name {
+            padding: 8px;
+            background: #f8f9fa;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #666;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .output-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .step {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step h4 {
+            color: #28a745;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .download-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .download-link {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 2px solid #667eea;
+        }
+
+        .download-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .download-link::before {
+            content: "⬇";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #856404;
+            color: #856404;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Location Image Manager</h1>
+            <p>Easily add images to your kayaking locations</p>
+        </div>
+
+        <div class="content">
+            <div class="alert alert-info">
+                <strong>ℹ️ How it works:</strong> Select a location, upload images (max 3), and we'll generate everything you need to add them to your app.
+            </div>
+
+            <div class="form-group">
+                <label for="location-select">Select Location</label>
+                <select id="location-select">
+                    <option value="">-- Choose a location --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Images (Maximum 3)</label>
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📷</div>
+                    <p><strong>Click to upload</strong> or drag and drop</p>
+                    <p>JPG, PNG files only</p>
+                    <p class="limit">Recommended: 800x600px, &lt; 500KB per image</p>
+                </div>
+                <input type="file" id="file-input" accept="image/jpeg,image/png,image/jpg" multiple style="display: none;">
+            </div>
+
+            <div class="image-preview" id="image-preview"></div>
+
+            <button class="btn btn-primary" id="generate-btn" disabled>Generate Setup Instructions</button>
+
+            <div id="output" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/data/locations.js"></script>
+    <script>
+        let uploadedImages = [];
+        let selectedLocation = null;
+
+        // Populate location dropdown
+        function populateLocations() {
+            const select = document.getElementById('location-select');
+            const locations = getSavedLocations();
+
+            locations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location.name;
+                option.textContent = location.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Handle location selection
+        document.getElementById('location-select').addEventListener('change', (e) => {
+            selectedLocation = e.target.value;
+            checkGenerateButton();
+        });
+
+        // Upload area interactions
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Handle file upload
+        function handleFiles(files) {
+            const newImages = Array.from(files).slice(0, 3 - uploadedImages.length);
+
+            newImages.forEach(file => {
+                if (!file.type.match('image/(jpeg|jpg|png)')) {
+                    alert('Please upload only JPG or PNG images');
+                    return;
+                }
+
+                if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                    alert(`${file.name} is too large. Please use images under 2MB.`);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push({
+                        file: file,
+                        dataUrl: e.target.result,
+                        name: file.name
+                    });
+                    renderPreviews();
+                    checkGenerateButton();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Render image previews
+        function renderPreviews() {
+            const preview = document.getElementById('image-preview');
+            preview.innerHTML = '';
+
+            uploadedImages.forEach((image, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${image.dataUrl}" alt="Image ${index + 1}">
+                    <button class="remove-btn" data-index="${index}">×</button>
+                    <div class="image-name">Image ${index + 1}</div>
+                `;
+                preview.appendChild(item);
+            });
+
+            // Add remove button listeners
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const index = parseInt(btn.dataset.index);
+                    uploadedImages.splice(index, 1);
+                    renderPreviews();
+                    checkGenerateButton();
+                });
+            });
+        }
+
+        // Check if generate button should be enabled
+        function checkGenerateButton() {
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = !(selectedLocation && uploadedImages.length > 0);
+        }
+
+        // Generate setup instructions
+        document.getElementById('generate-btn').addEventListener('click', generateInstructions);
+
+        function generateInstructions() {
+            const folderName = selectedLocation.toLowerCase().replace(/\s+/g, '-');
+            const output = document.getElementById('output');
+
+            let imagesCode = uploadedImages.map((img, index) => {
+                return `        "images/locations/${folderName}/${folderName}-${index + 1}.jpg"`;
+            }).join(',\n');
+
+            let downloadLinks = uploadedImages.map((img, index) => {
+                return `
+                    <a href="${img.dataUrl}" download="${folderName}-${index + 1}.jpg" class="download-link">
+                        ${folderName}-${index + 1}.jpg
+                    </a>
+                `;
+            }).join('');
+
+            output.innerHTML = `
+                <div class="output-section">
+                    <h3>✅ Setup Instructions</h3>
+
+                    <div class="step">
+                        <h4>Step 1: Download Your Images</h4>
+                        <p>Click each link below to download the properly named images:</p>
+                        <div class="download-links">
+                            ${downloadLinks}
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Step 2: Create Folder Structure</h4>
+                        <p>Create this folder in your project:</p>
+                        <div class="code-block">images/locations/${folderName}/</div>
+                        <p>Then move the downloaded images into this folder.</p>
+                    </div>
+
+                    <div class="step">
+                        <h4>Step 3: Update locations.js</h4>
+                        <p>Open <strong>js/data/locations.js</strong> and find your location "${selectedLocation}". Add or update the images array:</p>
+                        <div class="code-block">{
+    name: "${selectedLocation}",
+    lat: ...,
+    lon: ...,
+    description: "...",
+    paddlingDescription: "...",
+    images: [
+${imagesCode}
+    ]
+}</div>
+                    </div>
+
+                    <div class="step">
+                        <h4>Step 4: Test</h4>
+                        <p>Refresh your app and select "${selectedLocation}" to see your images!</p>
+                    </div>
+                </div>
+            `;
+
+            output.style.display = 'block';
+            output.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize
+        populateLocations();
+    </script>
+</body>
+</html>

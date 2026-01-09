@@ -1,0 +1,258 @@
+/* Webcam Viewer Styles */
+
+.webcam-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
+}
+
+.webcam-modal-content {
+    background-color: #fff;
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 8px;
+    max-width: 1200px;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.webcam-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.webcam-modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.webcam-close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.webcam-close-btn:hover {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+.webcam-modal-body {
+    padding: 30px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.webcam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.webcam-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.webcam-info {
+    margin-bottom: 15px;
+}
+
+.webcam-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.webcam-distance {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.webcam-view {
+    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.webcam-iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    display: block;
+}
+
+.webcam-image-container {
+    position: relative;
+}
+
+.webcam-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+}
+
+.webcam-image-note {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 10px 0 0 0;
+    font-style: italic;
+}
+
+.webcam-link-only {
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.webcam-link-message {
+    color: #495057;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.webcam-link-message strong {
+    font-size: 1.1rem;
+    color: #17a2b8;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.webcam-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+.webcam-no-results {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.webcam-no-results p {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.webcam-help-text {
+    font-size: 0.9rem;
+}
+
+.webcam-help-text code {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #d63384;
+}
+
+/* Webcam Button in Location Card */
+.webcam-btn {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.webcam-btn:hover {
+    background-color: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.webcam-btn:active {
+    transform: translateY(0);
+}
+
+.webcam-btn-icon {
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .webcam-modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+
+    .webcam-modal-header {
+        padding: 15px 20px;
+    }
+
+    .webcam-modal-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .webcam-modal-body {
+        padding: 20px;
+    }
+
+    .webcam-iframe {
+        height: 300px;
+    }
+}

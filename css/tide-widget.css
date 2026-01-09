@@ -1,0 +1,64 @@
+/* Tide Widget Specific Styles */
+
+.tide-widget-container {
+    background-color: var(--color-white);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+}
+
+#tide-canvas {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    height: 300px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: var(--radius-sm);
+}
+
+.canvas-fallback {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-light);
+}
+
+.tide-times {
+    margin-top: var(--spacing-md);
+}
+
+.tide-times h4 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text);
+    font-size: var(--font-size-lg);
+}
+
+/* Responsive adjustments for tide widget */
+@media (max-width: 768px) {
+    #tide-canvas {
+        height: 250px;
+    }
+
+    .tide-widget-container {
+        padding: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    #tide-canvas {
+        height: 200px;
+    }
+}
+
+/* Tidal streams styling */
+.tidal-stream-item {
+    padding: var(--spacing-md);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.tidal-stream-item strong {
+    color: var(--color-primary);
+}

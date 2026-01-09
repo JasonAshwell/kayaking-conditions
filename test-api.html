@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Sea Kayaking Conditions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0066cc;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #004c99;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            color: #0c5460;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Test Suite - Sea Kayaking Conditions</h1>
+
+    <div class="test-section">
+        <h2>1. UKHO Tidal API - Stations List</h2>
+        <p>Tests if we can fetch the list of tidal stations from UKHO.</p>
+        <button onclick="testUKHOStations()">Test UKHO Stations</button>
+        <div id="ukho-stations-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. UKHO Tidal API - Specific Station Tides</h2>
+        <p>Tests if we can fetch tide times for a specific station (Falmouth).</p>
+        <button onclick="testUKHOTides()">Test UKHO Tides</button>
+        <div id="ukho-tides-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Open-Meteo Weather API</h2>
+        <p>Tests if we can fetch weather data.</p>
+        <button onclick="testOpenMeteoWeather()">Test Weather API</button>
+        <div id="weather-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Open-Meteo Marine API</h2>
+        <p>Tests if we can fetch marine conditions.</p>
+        <button onclick="testOpenMeteoMarine()">Test Marine API</button>
+        <div id="marine-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Nominatim Geocoding API</h2>
+        <p>Tests if we can search for locations.</p>
+        <button onclick="testNominatim()">Test Geocoding API</button>
+        <div id="nominatim-result"></div>
+    </div>
+
+    <script>
+        const UKHO_API_KEY = '0d11e2781a6f4a7181fbbdba3bf45e6c';
+        const UKHO_BASE_URL = 'https://admiraltyapi.azure-api.net/uktidalapi';
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        async function testUKHOStations() {
+            const resultId = 'ukho-stations-result';
+            showResult(resultId, 'Testing UKHO Stations API...', 'loading');
+
+            try {
+                const url = `${UKHO_BASE_URL}/api/V1/Stations`;
+
+                console.log('Fetching:', url);
+                console.log('API Key:', UKHO_API_KEY);
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': UKHO_API_KEY
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                const message = `✓ SUCCESS!
+Status: ${response.status}
+Total Stations: ${data.features ? data.features.length : 'Unknown'}
+First Station: ${data.features && data.features[0] ? data.features[0].properties.Name : 'N/A'}
+
+Sample Data:
+${JSON.stringify(data.features ? data.features.slice(0, 2) : data, null, 2)}`;
+
+                showResult(resultId, message, 'success');
+            } catch (error) {
+                const message = `✗ FAILED!
+Error: ${error.message}
+
+This could mean:
+- Invalid API key
+- API key expired
+- Network/CORS issue
+- Wrong endpoint URL
+
+Full Error:
+${error.stack}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        async function testUKHOTides() {
+            const resultId = 'ukho-tides-result';
+            showResult(resultId, 'Testing UKHO Tides API...', 'loading');
+
+            try {
+                // First, get stations to find a valid station ID
+                const stationsUrl = `${UKHO_BASE_URL}/api/V1/Stations`;
+                const stationsResponse = await fetch(stationsUrl, {
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': UKHO_API_KEY
+                    }
+                });
+
+                if (!stationsResponse.ok) {
+                    throw new Error(`Failed to fetch stations: ${stationsResponse.status}`);
+                }
+
+                const stationsData = await stationsResponse.json();
+
+                // Find Falmouth or use first station
+                let stationId = null;
+                let stationName = '';
+
+                if (stationsData.features && stationsData.features.length > 0) {
+                    // Try to find Falmouth
+                    const falmouth = stationsData.features.find(s =>
+                        s.properties.Name.toLowerCase().includes('falmouth')
+                    );
+
+                    if (falmouth) {
+                        stationId = falmouth.properties.Id;
+                        stationName = falmouth.properties.Name;
+                    } else {
+                        stationId = stationsData.features[0].properties.Id;
+                        stationName = stationsData.features[0].properties.Name;
+                    }
+                }
+
+                if (!stationId) {
+                    throw new Error('No stations available');
+                }
+
+                // Now fetch tides for this station
+                const tidesUrl = `${UKHO_BASE_URL}/api/V1/Stations/${stationId}/TidalEvents?duration=1`;
+
+                console.log('Fetching tides for:', stationName, 'ID:', stationId);
+
+                const tidesResponse = await fetch(tidesUrl, {
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': UKHO_API_KEY
+                    }
+                });
+
+                if (!tidesResponse.ok) {
+                    const errorText = await tidesResponse.text();
+                    throw new Error(`HTTP ${tidesResponse.status}: ${errorText}`);
+                }
+
+                const tidesData = await tidesResponse.json();
+
+                const message = `✓ SUCCESS!
+Station: ${stationName}
+Station ID: ${stationId}
+Tide Events Found: ${tidesData.length || 0}
+
+Next Few Tides:
+${JSON.stringify(tidesData.slice(0, 4), null, 2)}`;
+
+                showResult(resultId, message, 'success');
+            } catch (error) {
+                const message = `✗ FAILED!
+Error: ${error.message}
+
+Full Error:
+${error.stack}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        async function testOpenMeteoWeather() {
+            const resultId = 'weather-result';
+            showResult(resultId, 'Testing Open-Meteo Weather API...', 'loading');
+
+            try {
+                // Falmouth coordinates
+                const lat = 50.1503;
+                const lon = -5.0700;
+                const today = new Date().toISOString().split('T')[0];
+
+                const params = new URLSearchParams({
+                    latitude: lat,
+                    longitude: lon,
+                    start_date: today,
+                    end_date: today,
+                    current: 'temperature_2m,windspeed_10m,winddirection_10m',
+                    hourly: 'temperature_2m,windspeed_10m,winddirection_10m',
+                    timezone: 'Europe/London',
+                    windspeed_unit: 'kn'
+                });
+
+                const url = `https://api.open-meteo.com/v1/forecast?${params}`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const message = `✓ SUCCESS!
+Location: ${data.latitude}, ${data.longitude}
+Current Temperature: ${data.current?.temperature_2m}°C
+Current Wind: ${data.current?.windspeed_10m} kn
+Hourly Data Points: ${data.hourly?.time?.length || 0}`;
+
+                showResult(resultId, message, 'success');
+            } catch (error) {
+                const message = `✗ FAILED!
+Error: ${error.message}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        async function testOpenMeteoMarine() {
+            const resultId = 'marine-result';
+            showResult(resultId, 'Testing Open-Meteo Marine API...', 'loading');
+
+            try {
+                const lat = 50.1503;
+                const lon = -5.0700;
+                const today = new Date().toISOString().split('T')[0];
+
+                const params = new URLSearchParams({
+                    latitude: lat,
+                    longitude: lon,
+                    start_date: today,
+                    end_date: today,
+                    hourly: 'wave_height,wave_direction,wave_period',
+                    timezone: 'Europe/London'
+                });
+
+                const url = `https://marine-api.open-meteo.com/v1/marine?${params}`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const message = `✓ SUCCESS!
+Location: ${data.latitude}, ${data.longitude}
+Hourly Data Points: ${data.hourly?.time?.length || 0}
+Sample Wave Height: ${data.hourly?.wave_height?.[0]} m`;
+
+                showResult(resultId, message, 'success');
+            } catch (error) {
+                const message = `✗ FAILED!
+Error: ${error.message}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        async function testNominatim() {
+            const resultId = 'nominatim-result';
+            showResult(resultId, 'Testing Nominatim Geocoding API...', 'loading');
+
+            try {
+                const params = new URLSearchParams({
+                    q: 'Falmouth, UK',
+                    format: 'json',
+                    countrycodes: 'gb',
+                    limit: 1
+                });
+
+                const url = `https://nominatim.openstreetmap.org/search?${params}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'User-Agent': 'SeaKayakingConditionsApp/1.0'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const message = `✓ SUCCESS!
+Results Found: ${data.length}
+Location: ${data[0]?.display_name || 'N/A'}
+Coordinates: ${data[0]?.lat}, ${data[0]?.lon}`;
+
+                showResult(resultId, message, 'success');
+            } catch (error) {
+                const message = `✗ FAILED!
+Error: ${error.message}`;
+                showResult(resultId, message, 'error');
+            }
+        }
+
+        // Auto-run UKHO test on load
+        window.addEventListener('load', () => {
+            console.log('API Test page loaded');
+            console.log('UKHO API Key:', UKHO_API_KEY);
+            console.log('Ready to test APIs');
+        });
+    </script>
+</body>
+</html>

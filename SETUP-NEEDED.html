@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Required - Sea Kayaking Conditions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .step h2 {
+            display: inline;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .step p {
+            margin: 15px 0 10px 40px;
+            line-height: 1.6;
+        }
+        .step code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .link-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px 40px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .link-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .why-box {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .why-box h3 {
+            color: #0050b3;
+            margin-bottom: 10px;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚓ Setup Required</h1>
+        <p class="subtitle">Your Sea Kayaking Conditions app needs a free API key to access tide data</p>
+
+        <div class="why-box">
+            <h3>Why do I need this?</h3>
+            <ul>
+                <li><strong>Completely Free:</strong> 1000 requests/month forever (no credit card)</li>
+                <li><strong>Quick Setup:</strong> Takes just 2 minutes</li>
+                <li><strong>Accurate Data:</strong> Global tide predictions for any location</li>
+                <li><strong>One-Time Setup:</strong> Do it once, works forever</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <h2>Register for Free Account</h2>
+            <p>Visit WorldTides and create a free account:</p>
+            <a href="https://www.worldtides.info/register" target="_blank" class="link-button">
+                Register Free Account →
+            </a>
+            <p>Fill in your email, choose a password, and verify your email.</p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <h2>Get Your API Key</h2>
+            <p>After verifying your email:</p>
+            <a href="https://www.worldtides.info/account" target="_blank" class="link-button">
+                Get API Key →
+            </a>
+            <p>Log in and find your API key under "API Keys" section.</p>
+            <p>It looks like: <code>135660c8-6da3-4b8f-baf2-eb3f3c56b6c9</code></p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <h2>Add Key to Config File</h2>
+            <p>Open this file in a text editor:</p>
+            <p><code>js/utils/config.js</code></p>
+
+            <p>Find these lines (around lines 7-9):</p>
+            <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 6px; margin: 10px 40px; overflow-x: auto;">apiKey: '',
+...
+useFreeMode: true</pre>
+
+            <p>Change to:</p>
+            <pre style="background: #2d3748; color: #68d391; padding: 15px; border-radius: 6px; margin: 10px 40px; overflow-x: auto;">apiKey: 'YOUR-ACTUAL-KEY-HERE',
+...
+useFreeMode: false</pre>
+
+            <p>Save the file.</p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <h2>Refresh and Use!</h2>
+            <p>Refresh your browser and start using the app:</p>
+            <p style="margin-left: 40px;">
+                <a href="index.html" class="link-button">Open App →</a>
+            </p>
+        </div>
+
+        <div class="success">
+            <strong>✓ That's it!</strong> You now have unlimited access to tide data for planning your kayaking trips.
+        </div>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #dee2e6;">
+
+        <h3>Having Trouble?</h3>
+        <p>Read the detailed guide: <a href="GET-API-KEY.md" target="_blank">GET-API-KEY.md</a></p>
+
+        <h3>Why Not Just Use UKHO?</h3>
+        <p>The UKHO API you have doesn't work in browsers due to CORS restrictions (browser security). WorldTides is designed for web apps and works perfectly!</p>
+    </div>
+</body>
+</html>

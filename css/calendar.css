@@ -1,0 +1,57 @@
+/* Calendar / Date Picker Styles */
+
+/* Native HTML5 date input styling */
+input[type="date"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    padding: var(--spacing-xs);
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+    color: var(--color-text);
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Focus state */
+input[type="date"]:focus::-webkit-datetime-edit {
+    color: var(--color-primary);
+}
+
+/* Disabled state */
+input[type="date"]:disabled {
+    background-color: var(--color-bg);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Invalid state */
+input[type="date"]:invalid {
+    border-color: var(--color-danger);
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    input[type="date"] {
+        font-size: 16px; /* Prevent zoom on mobile */
+    }
+}

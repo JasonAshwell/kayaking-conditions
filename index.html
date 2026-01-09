@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sea kayaking conditions for UK locations - tide times, wave heights, weather, and safety information">
+    <title>Sea Kayaking Conditions - UK</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tide-widget.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/webcam.css">
+    <link rel="stylesheet" href="css/location-gallery.css">
+
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Sea Kayaking Conditions</h1>
+        <p class="subtitle">UK coastal conditions for safe kayaking trips</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="container">
+                <h2>Plan Your Trip</h2>
+
+                <!-- Location Search -->
+                <div class="search-group">
+                    <label for="saved-locations-select">Saved Locations</label>
+                    <select
+                        id="saved-locations-select"
+                        class="saved-locations-select"
+                        aria-label="Select from saved locations"
+                    >
+                        <option value="">-- Select a saved location --</option>
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                    <span class="help-text">Choose a saved location or search below</span>
+                </div>
+
+                <div class="search-group">
+                    <label for="location-input">Or Search</label>
+                    <div class="location-search-wrapper">
+                        <input
+                            type="text"
+                            id="location-input"
+                            placeholder="e.g. Falmouth, Brighton, Anglesey..."
+                            autocomplete="off"
+                            aria-label="Search for a UK location"
+                        />
+                        <div id="location-suggestions" class="suggestions-dropdown" aria-live="polite"></div>
+                    </div>
+                    <span class="help-text">Enter any UK coastal location</span>
+                </div>
+
+                <!-- Date Selection -->
+                <div class="search-group">
+                    <label for="date-input">Date</label>
+                    <input
+                        type="date"
+                        id="date-input"
+                        aria-label="Select a date for conditions"
+                    />
+                    <span class="help-text">Choose a date within the next 7 days</span>
+                </div>
+
+                <!-- Trip Start Time Selection -->
+                <div class="search-group">
+                    <label for="time-input">Trip Start Time</label>
+                    <input
+                        type="time"
+                        id="time-input"
+                        aria-label="Select your trip start time"
+                    />
+                    <span class="help-text">Select when you plan to start your trip</span>
+                </div>
+
+                <!-- Search Button -->
+                <button id="search-btn" class="btn-primary" aria-label="Get kayaking conditions">
+                    Get Conditions
+                </button>
+
+                <!-- Loading Indicator -->
+                <div id="loading" class="loading-spinner" style="display: none;" role="status">
+                    <div class="spinner"></div>
+                    <p>Fetching conditions...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error-message" class="error-message" style="display: none;" role="alert"></div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="results-section" style="display: none;">
+            <div class="container">
+                <!-- Results Header -->
+                <div class="results-header">
+                    <h2 id="results-location">Conditions</h2>
+                    <p id="results-date" class="results-date"></p>
+                    <p id="results-coords" class="results-coords"></p>
+                    <div id="data-sources" class="data-sources"></div>
+                </div>
+
+                <!-- Safety Summary -->
+                <div id="safety-summary" class="safety-summary">
+                    <!-- Grade Card -->
+                    <div id="grade-card" class="grade-card">
+                        <h3>Conditions Risk Score (based on worst conditions in a 6 hour period from start)</h3>
+                        <div class="grade-table-container">
+                            <table class="grade-table">
+                                <thead>
+                                    <tr>
+                                        <th>Factor</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grade-table-body">
+                                    <!-- Rows will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="grade-total-row">
+                                        <td><strong>Total Risk Score</strong></td>
+                                        <td id="grade-total-score"><strong>0</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Selectable Activities -->
+                        <div class="grade-activities">
+                            <h4>Select Activities (optional)</h4>
+                            <div class="grade-checkboxes">
+                                <label class="grade-checkbox-label">
+                                    <input type="checkbox" id="grade-rockhopping" class="grade-checkbox" data-points="20">
+                                    <span>Rockhopping</span>
+                                </label>
+                                <label class="grade-checkbox-label">
+                                    <input type="checkbox" id="grade-sea-caves" class="grade-checkbox" data-points="20">
+                                    <span>Sea Caves</span>
+                                </label>
+                                <label class="grade-checkbox-label">
+                                    <input type="checkbox" id="grade-surfing" class="grade-checkbox" data-points="20">
+                                    <span>Surfing</span>
+                                </label>
+                                <label class="grade-checkbox-label">
+                                    <input type="checkbox" id="grade-night-time" class="grade-checkbox" data-points="20">
+                                    <span>Night Time</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- AI Assessment -->
+                        <div id="grade-assessment" class="grade-assessment">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Map -->
+                <div class="info-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Location</h3>
+                        <button id="webcam-btn" class="webcam-btn" style="display: none;">
+                            <span class="webcam-btn-icon">📹</span>
+                            View Webcams
+                        </button>
+                    </div>
+
+                    <!-- Paddling Description -->
+                    <div id="paddling-description" class="paddling-description" style="display: none;">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Location Images Gallery -->
+                    <div id="location-images-gallery" class="location-images-gallery" style="display: none;">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <div id="location-map" style="height: 500px; border-radius: 8px;"></div>
+                </div>
+
+                <!-- Tide Information -->
+                <div class="info-card">
+                    <h3>Tides</h3>
+
+                    <!-- Tide Visualization Widget -->
+                    <div class="tide-widget-container">
+                        <canvas id="tide-canvas" width="800" height="300" aria-label="Tide height visualization"></canvas>
+                        <div id="tide-canvas-fallback" class="canvas-fallback" style="display: none;">
+                            <p>Tide visualization not available</p>
+                        </div>
+                    </div>
+
+                    <!-- Tide Times Table -->
+                    <div class="tide-times">
+                        <h4>High and Low Tides</h4>
+                        <table id="tide-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Height (m above CD)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tide-table-body">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tidal Range -->
+                    <div id="tidal-range" class="tidal-info"></div>
+                </div>
+
+                <!-- Weather Conditions -->
+                <div class="info-card">
+                    <h3>Current Weather</h3>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="weather-label">Wind</span>
+                            <div class="weather-value" id="wind-info">
+                                <span id="wind-speed"></span>
+                                <div id="wind-direction" class="direction-arrow"></div>
+                            </div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-label">Temperature</span>
+                            <div class="weather-value" id="temperature"></div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-label">Precipitation</span>
+                            <div class="weather-value" id="precipitation"></div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-label">Visibility</span>
+                            <div class="weather-value" id="visibility"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hourly Weather Forecast -->
+                <div class="info-card">
+                    <h3>Hourly Forecast</h3>
+                    <div id="hourly-weather" class="hourly-weather-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Marine Conditions (Hourly) -->
+                <div class="info-card">
+                    <h3>Marine Conditions (Hourly)</h3>
+                    <div class="table-container">
+                        <table id="marine-table" class="data-table marine-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Wave Height</th>
+                                    <th>Wave Dir</th>
+                                    <th>Period</th>
+                                    <th>Swell</th>
+                                    <th>Current</th>
+                                    <th>Current Dir</th>
+                                    <th>Sea Temp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marine-table-body">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <!-- Attribution -->
+            <div class="attribution">
+                <h4>Data Sources</h4>
+                <ul>
+                    <li>Tidal data from <a href="https://www.worldtides.info" target="_blank" rel="noopener">WorldTides</a></li>
+                    <li>Weather and marine data from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></li>
+                    <li>Location data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a></li>
+                </ul>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="disclaimer">
+                <h4>Important Disclaimer</h4>
+                <p>
+                    <strong>For informational purposes only.</strong> Do not rely solely on this data for safety decisions.
+                    Always check official forecasts before kayaking. Conditions can change rapidly.
+                    Sea kayaking carries inherent risks - ensure you have proper training, equipment, and experience.
+                </p>
+            </div>
+
+            <!-- Copyright -->
+            <div class="copyright">
+                <p>&copy; 2026 Sea Kayaking Conditions. Built for safe coastal paddling.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <!-- Leaflet JS for map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script src="js/utils/config.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/data/webcams.js"></script>
+    <script src="js/data/locations.js"></script>
+    <script src="js/api/geocoding.js"></script>
+    <script src="js/api/coastline.js"></script>
+    <script src="js/api/tides.js"></script>
+    <script src="js/api/marine.js"></script>
+    <script src="js/api/stormglass.js"></script>
+    <script src="js/api/weather.js"></script>
+    <script src="js/ui/location-search.js"></script>
+    <script src="js/ui/date-picker.js"></script>
+    <script src="js/ui/tide-widget.js"></script>
+    <script src="js/ui/webcam-viewer.js"></script>
+    <script src="js/ui/results-display.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
