@@ -37,7 +37,9 @@ const KAYAKING_ROUTES = [
     type: "strava", // "strava", "outdooractive", "other"
     description: "Beautiful estaury paddle. Paddle past Old Mill Creek or up it to add distance then on to Greenways the home of Agatha Christie then Dittisham. Be careful of river traffic especially if crossing the river.",
     distance: "12km",
-    difficulty: "Easy"
+    difficulty: "Easy",
+	 goodConditions: "Slack water. Light offshore winds. Good visibility.",
+      trickyConditions: "Strong SW winds create rough seas. Avoid during spring tides."
     },
 
 ];
