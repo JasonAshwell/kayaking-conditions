@@ -167,10 +167,27 @@ class ResultsDisplay {
         if (!this.map) {
             this.map = L.map('location-map').setView([location.lat, location.lon], 12);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // Define base layers
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
-                maxZoom: 18
-            }).addTo(this.map);
+                maxZoom: 19
+            });
+
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+                maxZoom: 19
+            });
+
+            // Add default layer
+            osmLayer.addTo(this.map);
+
+            // Add layer control
+            const baseMaps = {
+                "Street Map": osmLayer,
+                "Satellite": satelliteLayer
+            };
+
+            L.control.layers(baseMaps, null, { position: 'topright' }).addTo(this.map);
         } else {
             // Update existing map
             this.map.setView([location.lat, location.lon], 12);

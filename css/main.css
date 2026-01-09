@@ -796,6 +796,37 @@ body {
     font-family: var(--font-family);
 }
 
+/* Leaflet Layer Control Customization */
+.leaflet-control-layers {
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.leaflet-control-layers-toggle {
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%230066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolygon points="12 2 2 7 12 12 22 7 12 2"%3e%3c/polygon%3e%3cpolyline points="2 17 12 22 22 17"%3e%3c/polyline%3e%3cpolyline points="2 12 12 17 22 12"%3e%3c/polyline%3e%3c/svg%3e');
+    width: 36px;
+    height: 36px;
+}
+
+.leaflet-control-layers-expanded {
+    padding: 10px;
+    font-family: var(--font-family);
+}
+
+.leaflet-control-layers-base label {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.leaflet-control-layers-base input[type="radio"] {
+    cursor: pointer;
+}
+
 /* ===================================
    Data Sources Display
    =================================== */
