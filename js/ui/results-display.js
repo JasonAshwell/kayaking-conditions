@@ -261,6 +261,12 @@ class ResultsDisplay {
 
         // Setup webcam button
         this.setupWebcamButton(location);
+
+        // Setup routes button
+        this.setupRoutesButton(location);
+
+        // Setup parking controls
+        this.setupParkingControls(location);
     }
 
     setupWebcamButton(location) {
@@ -308,6 +314,89 @@ class ResultsDisplay {
                 if (typeof webcamViewer !== 'undefined') {
                     webcamViewer.show(location.lat, location.lon, location.name);
                 }
+            });
+        }
+    }
+
+    setupRoutesButton(location) {
+        const routesBtn = document.getElementById('routes-btn');
+
+        // Find nearby routes
+        const nearbyRoutes = findRoutesNear(location.lat, location.lon, 10);
+
+        if (nearbyRoutes.length > 0) {
+            // Show button with count
+            routesBtn.textContent = '';
+            routesBtn.innerHTML = `
+                <span class="routes-btn-icon">🗺️</span>
+                View Routes (${nearbyRoutes.length})
+            `;
+            routesBtn.style.display = 'inline-flex';
+
+            // Remove old event listeners by cloning the button
+            const newBtn = routesBtn.cloneNode(true);
+            routesBtn.parentNode.replaceChild(newBtn, routesBtn);
+
+            // Add click event
+            newBtn.addEventListener('click', () => {
+                if (typeof routesViewer !== 'undefined') {
+                    routesViewer.open(location);
+                }
+            });
+        } else {
+            // No routes nearby - still show button but with different text
+            routesBtn.textContent = '';
+            routesBtn.innerHTML = `
+                <span class="routes-btn-icon">🗺️</span>
+                No Routes Nearby
+            `;
+            routesBtn.style.display = 'inline-flex';
+            routesBtn.style.opacity = '0.6';
+            routesBtn.style.cursor = 'default';
+
+            // Remove old event listeners
+            const newBtn = routesBtn.cloneNode(true);
+            routesBtn.parentNode.replaceChild(newBtn, routesBtn);
+
+            // Add click event to show empty state
+            newBtn.addEventListener('click', () => {
+                if (typeof routesViewer !== 'undefined') {
+                    routesViewer.open(location);
+                }
+            });
+        }
+    }
+
+    setupParkingControls(location) {
+        // Clear any existing parking map instance
+        if (this.parkingMap) {
+            this.parkingMap.clearAll();
+        }
+
+        // Create new parking map instance
+        this.parkingMap = new ParkingMap(this.map, location);
+
+        // Setup public parking button
+        const publicParkingBtn = document.getElementById('public-parking-btn');
+        if (publicParkingBtn) {
+            // Remove old event listeners
+            const newPublicBtn = publicParkingBtn.cloneNode(true);
+            publicParkingBtn.parentNode.replaceChild(newPublicBtn, publicParkingBtn);
+
+            newPublicBtn.addEventListener('click', () => {
+                this.parkingMap.togglePublicParking();
+            });
+        }
+
+        // Setup custom parking button
+        const customParkingBtn = document.getElementById('custom-parking-btn');
+        if (customParkingBtn) {
+            // Remove old event listeners
+            const newCustomBtn = customParkingBtn.cloneNode(true);
+            customParkingBtn.parentNode.replaceChild(newCustomBtn, customParkingBtn);
+
+            newCustomBtn.addEventListener('click', () => {
+                this.parkingMap.toggleCustomParking();
             });
         }
     }

@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/calendar.css">
     <link rel="stylesheet" href="css/webcam.css">
     <link rel="stylesheet" href="css/location-gallery.css">
+    <link rel="stylesheet" href="css/routes.css">
+    <link rel="stylesheet" href="css/parking.css">
 
     <!-- Leaflet CSS for map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -167,12 +169,18 @@
 
                 <!-- Location Map -->
                 <div class="info-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <h3 style="margin: 0;">Location</h3>
-                        <button id="webcam-btn" class="webcam-btn" style="display: none;">
-                            <span class="webcam-btn-icon">📹</span>
-                            View Webcams
-                        </button>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button id="webcam-btn" class="webcam-btn" style="display: none;">
+                                <span class="webcam-btn-icon">📹</span>
+                                View Webcams
+                            </button>
+                            <button id="routes-btn" class="routes-btn" style="display: none;">
+                                <span class="routes-btn-icon">🗺️</span>
+                                View Routes
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Paddling Description -->
@@ -186,6 +194,16 @@
                     </div>
 
                     <div id="location-map" style="height: 500px; border-radius: 8px;"></div>
+
+                    <!-- Parking Controls -->
+                    <div class="parking-controls">
+                        <button id="public-parking-btn" class="parking-btn">
+                            🅿️ Public Parking
+                        </button>
+                        <button id="custom-parking-btn" class="parking-btn">
+                            📍 Custom Parking
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tide Information -->
@@ -322,6 +340,8 @@
     <script src="js/utils/helpers.js"></script>
     <script src="js/data/webcams.js"></script>
     <script src="js/data/locations.js"></script>
+    <script src="js/data/parking.js"></script>
+    <script src="js/data/routes.js"></script>
     <script src="js/api/geocoding.js"></script>
     <script src="js/api/coastline.js"></script>
     <script src="js/api/tides.js"></script>
@@ -332,6 +352,8 @@
     <script src="js/ui/date-picker.js"></script>
     <script src="js/ui/tide-widget.js"></script>
     <script src="js/ui/webcam-viewer.js"></script>
+    <script src="js/ui/routes-viewer.js"></script>
+    <script src="js/ui/parking-map.js"></script>
     <script src="js/ui/results-display.js"></script>
     <script src="js/app.js"></script>
 </body>

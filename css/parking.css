@@ -1,0 +1,128 @@
+/* Parking Map Controls and Markers */
+
+.parking-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.parking-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.parking-btn:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #4e555b 100%);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    transform: translateY(-2px);
+}
+
+.parking-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.parking-btn.active {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.parking-btn.active:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+}
+
+/* Parking markers on map */
+.parking-marker {
+    background: none;
+    border: none;
+}
+
+.parking-marker-icon {
+    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    filter: drop-shadow(0 0 3px white);
+}
+
+.parking-marker-public .parking-marker-icon {
+    animation: pulse-parking 2s ease-in-out infinite;
+}
+
+.parking-marker-custom .parking-marker-icon {
+    animation: bounce-parking 2s ease-in-out infinite;
+}
+
+@keyframes pulse-parking {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes bounce-parking {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+/* Parking popup styles */
+.parking-popup {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.parking-popup strong {
+    color: #0066cc;
+    font-size: 1rem;
+}
+
+.parking-popup em {
+    color: #666;
+    text-transform: capitalize;
+}
+
+.parking-popup small {
+    color: #999;
+}
+
+.parking-fee {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.parking-popup .parking-fee:contains("Pay") {
+    background-color: #ffc107;
+    color: #333;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .parking-controls {
+        flex-direction: column;
+    }
+
+    .parking-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
