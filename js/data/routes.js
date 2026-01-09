@@ -28,6 +28,17 @@ const KAYAKING_ROUTES = [
     distance: "16km",
     difficulty: "Moderate"
     },
+	
+	{
+    name: "Dartmouth to Dittisham",
+    lat: 50.3515,
+    lon: -3.5794,
+    url: "https://www.strava.com/activities/14806705621",
+    type: "strava", // "strava", "outdooractive", "other"
+    description: "Beautiful estaury paddle. Paddle past Old Mill Creek or up it to add distance then on to Greenways the home of Agatha Christie then Dittisham. Be careful of river traffice especially is crossing the river.",
+    distance: "12km",
+    difficulty: "Easy"
+    },
 
 ];
 

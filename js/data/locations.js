@@ -11,7 +11,7 @@ const SAVED_LOCATIONS = [
         lat: 50.3515,
         lon: -3.5794,
         description: "River Dart estuary",
-        paddlingDescription: "Beautiful sheltered estuary with historic castle and vibrant town. Good for all abilities with options for coastal paddles around the Mew stone with rock hopping for intermediate kayakers.",
+        paddlingDescription: "Beautiful sheltered estuary with historic castle and vibrant town. Good for all abilities with options for coastal paddles around the Mew stone with rock hopping for intermediate kayakers paddling either way out of the estuary. For the less adventurous or in windy conditions paddle upstream towards Dittisham and Totnes",
         images: [
             "images/locations/dartmouth/dartmouth-1.jpg",
             "images/locations/dartmouth/dartmouth-2.jpg",
