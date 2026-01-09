@@ -69,12 +69,13 @@ class TideWidget {
             this.ctx.lineTo(this.width, y);
             this.ctx.stroke();
 
-            // Y-axis labels
+            // Y-axis labels with better visibility
             this.ctx.fillStyle = this.colors.text;
-            this.ctx.font = '12px sans-serif';
+            this.ctx.font = 'bold 13px sans-serif';
             this.ctx.textAlign = 'right';
+            this.ctx.textBaseline = 'middle';
             const heightValue = maxHeight - (heightStep * i);
-            this.ctx.fillText(`${heightValue.toFixed(1)}m`, -10, y + 4);
+            this.ctx.fillText(`${heightValue.toFixed(1)}m`, -10, y);
         }
 
         // Vertical grid lines (time)
@@ -87,21 +88,24 @@ class TideWidget {
 
             // X-axis labels
             this.ctx.fillStyle = this.colors.text;
-            this.ctx.font = '12px sans-serif';
+            this.ctx.font = 'bold 12px sans-serif';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText(`${hour.toString().padStart(2, '0')}:00`, x, this.height + 20);
+            this.ctx.textBaseline = 'top';
+            this.ctx.fillText(`${hour.toString().padStart(2, '0')}:00`, x, this.height + 8);
         }
 
         // Axis titles
         this.ctx.fillStyle = this.colors.text;
-        this.ctx.font = 'bold 14px sans-serif';
+        this.ctx.font = 'bold 13px sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Time (24h)', this.width / 2, this.height + 35);
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText('Time', this.width / 2, this.height + 28);
 
         this.ctx.save();
-        this.ctx.translate(-45, this.height / 2);
+        this.ctx.translate(-50, this.height / 2);
         this.ctx.rotate(-Math.PI / 2);
-        this.ctx.fillText('Height (m above Chart Datum)', 0, 0);
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('Height (m)', 0, 0);
         this.ctx.restore();
 
         this.ctx.restore();
@@ -200,23 +204,47 @@ class TideWidget {
             this.ctx.lineWidth = 2;
 
             this.ctx.beginPath();
-            this.ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            this.ctx.arc(x, y, 7, 0, 2 * Math.PI);
             this.ctx.fill();
             this.ctx.stroke();
 
-            // Draw label
-            this.ctx.fillStyle = this.colors.text;
-            this.ctx.font = 'bold 11px sans-serif';
-            this.ctx.textAlign = 'center';
-
+            // Draw label with background for better readability
             const timeStr = formatTime(event.DateTime);
             const heightStr = `${event.Height.toFixed(1)}m`;
             const label = event.EventType === 'HighWater' ? 'HW' : 'LW';
 
-            this.ctx.fillText(label, x, y - 15);
-            this.ctx.font = '10px sans-serif';
-            this.ctx.fillText(timeStr, x, y - 25);
-            this.ctx.fillText(heightStr, x, y + 20);
+            // Position labels above for high water, below for low water to avoid overlap
+            const isHighWater = event.EventType === 'HighWater';
+            const labelYOffset = isHighWater ? -35 : 35;
+
+            // Draw background box for better contrast
+            const boxPadding = 4;
+            const boxWidth = 50;
+            const boxHeight = 36;
+            const boxX = x - boxWidth / 2;
+            const boxY = isHighWater ? y + labelYOffset - boxHeight + boxPadding : y + labelYOffset - boxPadding;
+
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = 1.5;
+            this.ctx.beginPath();
+            this.ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 4);
+            this.ctx.fill();
+            this.ctx.stroke();
+
+            // Draw labels
+            this.ctx.fillStyle = color;
+            this.ctx.font = 'bold 12px sans-serif';
+            this.ctx.textAlign = 'center';
+
+            const textBaseY = isHighWater ? y + labelYOffset - 20 : y + labelYOffset + 12;
+            this.ctx.fillText(label, x, textBaseY);
+
+            this.ctx.fillStyle = this.colors.text;
+            this.ctx.font = '11px sans-serif';
+            this.ctx.fillText(timeStr, x, textBaseY + 13);
+            this.ctx.font = 'bold 11px sans-serif';
+            this.ctx.fillText(heightStr, x, textBaseY + 26);
         });
 
         this.ctx.restore();
@@ -247,42 +275,58 @@ class TideWidget {
         this.ctx.stroke();
         this.ctx.setLineDash([]);
 
-        // Draw label
-        this.ctx.fillStyle = this.colors.current;
-        this.ctx.font = 'bold 12px sans-serif';
+        // Draw label with background for better visibility
+        const labelText = 'NOW';
+        this.ctx.font = 'bold 13px sans-serif';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('NOW', x, -10);
+
+        // Draw background box
+        const boxWidth = 40;
+        const boxHeight = 20;
+        const boxX = x - boxWidth / 2;
+        const boxY = -20;
+
+        this.ctx.fillStyle = this.colors.current;
+        this.ctx.beginPath();
+        this.ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 3);
+        this.ctx.fill();
+
+        // Draw text
+        this.ctx.fillStyle = '#fff';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(labelText, x, boxY + boxHeight / 2);
 
         this.ctx.restore();
     }
 
     drawLegend() {
         this.ctx.save();
-        this.ctx.translate(this.margin.left, 10);
+        this.ctx.translate(this.margin.left, 8);
 
         const legendItems = [
-            { label: 'Rising', color: this.colors.rising },
-            { label: 'Falling', color: this.colors.falling }
+            { label: 'Rising Tide', color: this.colors.rising },
+            { label: 'Falling Tide', color: this.colors.falling }
         ];
 
-        let xOffset = this.width - 200;
+        let xOffset = this.width - 230;
 
         legendItems.forEach((item, index) => {
-            // Draw line
+            // Draw thicker line for better visibility
             this.ctx.strokeStyle = item.color;
-            this.ctx.lineWidth = 3;
+            this.ctx.lineWidth = 4;
             this.ctx.beginPath();
             this.ctx.moveTo(xOffset, 5);
-            this.ctx.lineTo(xOffset + 30, 5);
+            this.ctx.lineTo(xOffset + 35, 5);
             this.ctx.stroke();
 
-            // Draw label
+            // Draw label with better font
             this.ctx.fillStyle = this.colors.text;
-            this.ctx.font = '12px sans-serif';
+            this.ctx.font = 'bold 12px sans-serif';
             this.ctx.textAlign = 'left';
-            this.ctx.fillText(item.label, xOffset + 35, 9);
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(item.label, xOffset + 40, 5);
 
-            xOffset += 100;
+            xOffset += 115;
         });
 
         this.ctx.restore();
