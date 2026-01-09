@@ -13,9 +13,9 @@ const SAVED_LOCATIONS = [
         description: "River Dart estuary",
         paddlingDescription: "Beautiful sheltered estuary with historic castle and vibrant town. Good for all abilities with options for coastal paddles around the Mew stone with rock hopping for intermediate kayakers.",
         images: [
-            // "images/locations/dartmouth/dartmouth-1.jpg",
-            // "images/locations/dartmouth/dartmouth-2.jpg",
-            // "images/locations/dartmouth/dartmouth-3.jpg"
+            "images/locations/dartmouth/dartmouth-1.jpg",
+            "images/locations/dartmouth/dartmouth-2.jpg",
+            "images/locations/dartmouth/dartmouth-3.jpg"
         ]
     },
 	 {
@@ -25,7 +25,9 @@ const SAVED_LOCATIONS = [
         description: "Scenic estuary and coastal routes",
         paddlingDescription: "Stunning sheltered estuary with sandy beaches and crystal-clear water. Perfect for beginners and families. Exposed coastal sections for advanced paddlers.",
         images: [
-            // Add your images here: "images/locations/salcombe/salcombe-1.jpg"
+           "images/locations/salcombe/salcombe-1.jpg",
+		   "images/locations/salcombe/salcombe-2.jpg",
+		   "images/locations/salcombe/salcombe-3.jpg"
         ]
     },
 	{
@@ -35,9 +37,9 @@ const SAVED_LOCATIONS = [
         description: "Large sheltered bay with islands",
         paddlingDescription: "Expansive sheltered bay perfect for exploring. Drake's Island and multiple breakwaters offer interesting routes. Good for intermediate paddlers. Watch for commercial shipping, ferries, and military vessels in marked channels. Launch from multiple slipways around the sound. Tidal streams can be strong near the breakwater entrances. Explore Jennycliff Bay, Cawsand Bay, and Mount Batten. Popular training ground for sea kayaking skills.",
         images: [
-            // "images/locations/plymouth-sound/plymouth-sound-1.jpg",
-            // "images/locations/plymouth-sound/plymouth-sound-2.jpg",
-            // "images/locations/plymouth-sound/plymouth-sound-3.jpg"
+            "images/locations/plymouth-sound/plymouth-sound-1.jpg",
+            "images/locations/plymouth-sound/plymouth-sound-2.jpg",
+            "images/locations/plymouth-sound/plymouth-sound-3.jpg"
         ]
     },
     {
@@ -59,9 +61,9 @@ const SAVED_LOCATIONS = [
         description: "Long Open Beach with surfing in some conditions",
         paddlingDescription: "Long shingle and sand beach backed by freshwater lagoon. Open to southerly swells making it good for surf kayaking when conditions allow. Suitable for confident intermediate paddlers. Launch from multiple points along the beach. Can be rough in onshore winds - fully exposed to south. Limited shelter once launched. Good for coastal tours towards Start Point for experienced paddlers. Watch for strong currents off Start Point. Beach fishing popular - be aware of lines.",
         images: [
-            // "images/locations/slapton-sands/slapton-sands-1.jpg",
-            // "images/locations/slapton-sands/slapton-sands-2.jpg",
-            // "images/locations/slapton-sands/slapton-sands-3.jpg"
+            "images/locations/slapton-sands/slapton-sands-1.jpg",
+            "images/locations/slapton-sands/slapton-sands-2.jpg",
+           "images/locations/slapton-sands/slapton-sands-3.jpg"
         ]
     },
 	{
@@ -71,9 +73,9 @@ const SAVED_LOCATIONS = [
         description: "Pretty Cove with 2 put in beaches",
         paddlingDescription: "Sheltered cove with Inner and Outer Hope beaches offering different launch options. Good for beginners in calm conditions, with options for intermediate coastal paddling. Inner Hope more sheltered, Outer Hope better for launching in moderate conditions. Rocky coastline excellent for exploring caves and gullies. Can paddle around Bolt Tail headland in calm seas (experienced only). Strong tidal streams around headlands. Beautiful clear water with good visibility. Launch easily from sandy beaches at mid to high tide.",
         images: [
-            // "images/locations/hope-cove/hope-cove-1.jpg",
-            // "images/locations/hope-cove/hope-cove-2.jpg",
-            // "images/locations/hope-cove/hope-cove-3.jpg"
+            "images/locations/hope-cove/hope-cove-1.jpg",
+            "images/locations/hope-cove/hope-cove-2.jpg",
+           "images/locations/hope-cove/hope-cove-3.jpg"
         ]
     },
 	{
@@ -83,9 +85,9 @@ const SAVED_LOCATIONS = [
         description: "Long Open Beach with surfing in some conditions",
         paddlingDescription: "Scenic beach with Great Mewstone island offshore making for an interesting paddle. Suitable for intermediate kayakers in moderate conditions. Launch from beach at mid to high tide. Can be exposed to southerly swells and winds. Rock hopping opportunities along coastline to east towards Bovisand. Good surf when swell is up. Strong tidal streams around Mewstone - plan timing carefully. Popular with divers - watch for boats. Marine Conservation Area - rich wildlife including seals. Rocky areas at low water.",
         images: [
-            // "images/locations/wembury/wembury-1.jpg",
-            // "images/locations/wembury/wembury-2.jpg",
-            // "images/locations/wembury/wembury-3.jpg"
+            "images/locations/wembury/wembury-1.jpg",
+            "images/locations/wembury/wembury-2.jpg",
+            "images/locations/wembury/wembury-3.jpg"
         ]
     },
 	{
@@ -95,9 +97,9 @@ const SAVED_LOCATIONS = [
         description: "Working fishing harbour and marina",
         paddlingDescription: "Historic working harbour with busy fishing fleet and marina. Sheltered inner harbour good for beginners. Launch from slipway or breakwater. Plenty to explore including breakwater, Berry Head, and coastal caves for intermediate paddlers. Watch for fishing boats, trawlers, and ferries - keep clear of commercial traffic. Can be busy in summer with pleasure boats. Paddle to Berry Head Nature Reserve for dramatic cliffs and seabirds. Tidal streams moderate inside harbour, stronger outside. Good facilities with cafes and shops nearby.",
         images: [
-            // "images/locations/brixham/brixham-1.jpg",
-            // "images/locations/brixham/brixham-2.jpg",
-            // "images/locations/brixham/brixham-3.jpg"
+            "images/locations/brixham/brixham-1.jpg",
+           "images/locations/brixham/brixham-2.jpg",
+            "images/locations/brixham/brixham-3.jpg"
         ]
     },
     {
@@ -107,9 +109,9 @@ const SAVED_LOCATIONS = [
         description: "Sheltered shingle beach in private bay",
         paddlingDescription: "Beautiful sheltered shingle beach in a private bay owned by local estate. Very beginner-friendly with good facilities. Launch easily from beach at all tides. Sheltered from most winds making it reliable. Good for first-time sea kayakers and families. Clear turquoise water with excellent visibility. Paddle along sheltered coastline or venture out to Start Point for advanced paddlers. Small fee for parking but excellent facilities including cafe and toilets. Popular in summer so arrive early. Limited rock hopping but beautiful scenery.",
         images: [
-            // "images/locations/blackpool-sands/blackpool-sands-1.jpg",
-            // "images/locations/blackpool-sands/blackpool-sands-2.jpg",
-            // "images/locations/blackpool-sands/blackpool-sands-3.jpg"
+            "images/locations/blackpool-sands/blackpool-sands-1.jpg",
+            "images/locations/blackpool-sands/blackpool-sands-2.jpg",
+            "images/locations/blackpool-sands/blackpool-sands-3.jpg"
         ]
     },
 // Cornwall
