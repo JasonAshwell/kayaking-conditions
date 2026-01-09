@@ -1,14 +1,12 @@
 // API Configuration
-// COPY THIS FILE TO config.js AND ADD YOUR API KEYS
 const CONFIG = {
     // WorldTides API (Free - CORS-enabled, works in browsers!)
     // UKHO API cannot be used from browsers due to CORS restrictions
     // WorldTides is permanently free with 1000 requests/month
-    // Get your free API key at: https://www.worldtides.info/register
     WORLDTIDES: {
-        apiKey: '', // Add your WorldTides API key here
+        apiKey: '135660c8-6da3-4b8f-baf2-eb3f3c56b6c9',
         baseUrl: 'https://www.worldtides.info/api/v3',
-        useFreeMode: true // Set to false after adding your API key
+        useFreeMode: false // Using API key for full access
     },
 
     // Open-Meteo Marine API (free, no API key required)
@@ -20,9 +18,8 @@ const CONFIG = {
     },
 
     // Stormglass API (free tier: 50 requests/day) - Comprehensive weather, marine, and tide data
-    // Get your free API key at: https://stormglass.io/
     STORMGLASS: {
-        apiKey: '', // Add your Stormglass API key here (optional)
+        apiKey: '76b98b6a-ec32-11f0-9b8c-0242ac130003-76b98bec-ec32-11f0-9b8c-0242ac130003',
         weatherUrl: 'https://api.stormglass.io/v2/weather/point',
         tideUrl: 'https://api.stormglass.io/v2/tide/extremes/point',
         weatherParams: {
