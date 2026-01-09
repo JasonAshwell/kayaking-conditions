@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayaking Data Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e5e5e5;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066cc;
+        }
+
+        .tab.active {
+            background: white;
+            color: #0066cc;
+            border-bottom: 3px solid #0066cc;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-row input,
+        .form-row textarea,
+        .form-row select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-row input:focus,
+        .form-row textarea:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .form-row textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .data-list {
+            margin-top: 20px;
+        }
+
+        .data-item {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-item:hover {
+            border-color: #0066cc;
+        }
+
+        .data-item-info h4 {
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+
+        .data-item-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .data-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .data-item-actions button {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .output-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .output-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .code-output {
+            background: #2d2d2d;
+            color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .import-section {
+            margin-bottom: 20px;
+        }
+
+        .import-section textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+            }
+
+            .data-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-item-actions {
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .data-item-actions button {
+                flex: 1;
+            }
+
+            .btn-actions {
+                flex-direction: column;
+            }
+
+            .btn-actions button {
+                width: 100%;
+            }
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛶 Kayaking Data Manager</h1>
+            <p>Manage locations, routes, parking, and webcams with an easy-to-use interface</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="locations">📍 Locations</button>
+            <button class="tab" data-tab="routes">🗺️ Routes</button>
+            <button class="tab" data-tab="parking">🅿️ Parking</button>
+            <button class="tab" data-tab="webcams">📹 Webcams</button>
+        </div>
+
+        <!-- Locations Tab -->
+        <div class="tab-content active" id="locations">
+            <div class="alert alert-info">
+                <strong>Manage Locations:</strong> Add your favorite kayaking spots with descriptions, coordinates, and images.
+            </div>
+
+            <div class="form-section">
+                <h3>Add/Edit Location</h3>
+                <form id="location-form">
+                    <div class="form-row">
+                        <label>Location Name *</label>
+                        <input type="text" id="loc-name" required>
+                        <small>e.g., "Dartmouth", "Salcombe"</small>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="loc-lat" required>
+                            <small>e.g., 50.3515</small>
+                        </div>
+                        <div class="form-row">
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="loc-lon" required>
+                            <small>e.g., -3.5794</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Short Description</label>
+                        <input type="text" id="loc-desc">
+                        <small>Brief description for dropdown (optional)</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Paddling Description</label>
+                        <textarea id="loc-paddling-desc"></textarea>
+                        <small>Detailed paddling information (optional)</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Image Paths (one per line)</label>
+                        <textarea id="loc-images"></textarea>
+                        <small>e.g., images/locations/dartmouth/dartmouth-1.jpg</small>
+                    </div>
+
+                    <div class="btn-actions">
+                        <button type="submit" class="btn btn-primary">Add Location</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearLocationForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-list" id="locations-list"></div>
+
+            <div class="output-section">
+                <h3>Generated Code for locations.js</h3>
+                <button class="btn btn-success copy-btn" onclick="copyToClipboard('locations-output')">📋 Copy to Clipboard</button>
+                <pre class="code-output" id="locations-output"></pre>
+            </div>
+        </div>
+
+        <!-- Routes Tab -->
+        <div class="tab-content" id="routes">
+            <div class="alert alert-info">
+                <strong>Manage Routes:</strong> Add kayaking routes from Strava, Outdoor Active, or custom sources.
+            </div>
+
+            <div class="form-section">
+                <h3>Add/Edit Route</h3>
+                <form id="route-form">
+                    <div class="form-row">
+                        <label>Route Name *</label>
+                        <input type="text" id="route-name" required>
+                        <small>e.g., "Dartmouth to The Mew Stone"</small>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="route-lat" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="route-lon" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Route URL *</label>
+                            <input type="url" id="route-url" required>
+                            <small>Strava, Outdoor Active, or other link</small>
+                        </div>
+                        <div class="form-row">
+                            <label>Platform Type *</label>
+                            <select id="route-type" required>
+                                <option value="strava">Strava</option>
+                                <option value="outdooractive">Outdoor Active</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Description</label>
+                        <textarea id="route-description"></textarea>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Distance</label>
+                            <input type="text" id="route-distance">
+                            <small>e.g., "12km" or "7.5 miles"</small>
+                        </div>
+                        <div class="form-row">
+                            <label>Difficulty</label>
+                            <select id="route-difficulty">
+                                <option value="">-- Not specified --</option>
+                                <option value="Easy">Easy</option>
+                                <option value="Moderate">Moderate</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Extreme">Extreme</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>✅ Good Conditions</label>
+                        <textarea id="route-good-conditions"></textarea>
+                        <small>When is this route best to paddle?</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label>⚠️ Tricky Conditions</label>
+                        <textarea id="route-tricky-conditions"></textarea>
+                        <small>What conditions should be avoided?</small>
+                    </div>
+
+                    <div class="btn-actions">
+                        <button type="submit" class="btn btn-primary">Add Route</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearRouteForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-list" id="routes-list"></div>
+
+            <div class="output-section">
+                <h3>Generated Code for routes.js</h3>
+                <button class="btn btn-success copy-btn" onclick="copyToClipboard('routes-output')">📋 Copy to Clipboard</button>
+                <pre class="code-output" id="routes-output"></pre>
+            </div>
+        </div>
+
+        <!-- Parking Tab -->
+        <div class="tab-content" id="parking">
+            <div class="alert alert-info">
+                <strong>Manage Parking:</strong> Add custom parking locations near kayaking spots.
+            </div>
+
+            <div class="form-section">
+                <h3>Add/Edit Parking</h3>
+                <form id="parking-form">
+                    <div class="form-row">
+                        <label>Parking Name *</label>
+                        <input type="text" id="park-name" required>
+                        <small>e.g., "Bigbury Beach Car Park"</small>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="park-lat" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="park-lon" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Description</label>
+                        <textarea id="park-description"></textarea>
+                        <small>Include fees, capacity, restrictions, etc.</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Parking Type</label>
+                        <select id="park-type">
+                            <option value="">-- Not specified --</option>
+                            <option value="Free">Free</option>
+                            <option value="Pay & Display">Pay & Display</option>
+                            <option value="Permit Only">Permit Only</option>
+                            <option value="Limited">Time Limited</option>
+                            <option value="Disabled">Disabled Only</option>
+                            <option value="Informal">Informal/Roadside</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-actions">
+                        <button type="submit" class="btn btn-primary">Add Parking</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearParkingForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-list" id="parking-list"></div>
+
+            <div class="output-section">
+                <h3>Generated Code for parking.js</h3>
+                <button class="btn btn-success copy-btn" onclick="copyToClipboard('parking-output')">📋 Copy to Clipboard</button>
+                <pre class="code-output" id="parking-output"></pre>
+            </div>
+        </div>
+
+        <!-- Webcams Tab -->
+        <div class="tab-content" id="webcams">
+            <div class="alert alert-info">
+                <strong>Manage Webcams:</strong> Add webcam links for live views near kayaking locations.
+            </div>
+
+            <div class="form-section">
+                <h3>Add/Edit Webcam</h3>
+                <form id="webcam-form">
+                    <div class="form-row">
+                        <label>Webcam Name *</label>
+                        <input type="text" id="cam-name" required>
+                        <small>e.g., "Bigbury Beach Webcam"</small>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Latitude *</label>
+                            <input type="number" step="any" id="cam-lat" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Longitude *</label>
+                            <input type="number" step="any" id="cam-lon" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Webcam URL *</label>
+                            <input type="url" id="cam-url" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Type *</label>
+                            <select id="cam-type" required>
+                                <option value="image">Image</option>
+                                <option value="iframe">Iframe</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Display Mode *</label>
+                        <select id="cam-display" required>
+                            <option value="embed">Embed in App</option>
+                            <option value="newtab">Open in New Tab</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-actions">
+                        <button type="submit" class="btn btn-primary">Add Webcam</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearWebcamForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-list" id="webcams-list"></div>
+
+            <div class="output-section">
+                <h3>Generated Code for webcams.js</h3>
+                <button class="btn btn-success copy-btn" onclick="copyToClipboard('webcams-output')">📋 Copy to Clipboard</button>
+                <pre class="code-output" id="webcams-output"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let locations = [];
+        let routes = [];
+        let parking = [];
+        let webcams = [];
+
+        // Load data from localStorage
+        function loadData() {
+            locations = JSON.parse(localStorage.getItem('kayaking_locations') || '[]');
+            routes = JSON.parse(localStorage.getItem('kayaking_routes') || '[]');
+            parking = JSON.parse(localStorage.getItem('kayaking_parking') || '[]');
+            webcams = JSON.parse(localStorage.getItem('kayaking_webcams') || '[]');
+
+            renderAllLists();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('kayaking_locations', JSON.stringify(locations));
+            localStorage.setItem('kayaking_routes', JSON.stringify(routes));
+            localStorage.setItem('kayaking_parking', JSON.stringify(parking));
+            localStorage.setItem('kayaking_webcams', JSON.stringify(webcams));
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Location Form
+        document.getElementById('location-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const location = {
+                name: document.getElementById('loc-name').value,
+                lat: parseFloat(document.getElementById('loc-lat').value),
+                lon: parseFloat(document.getElementById('loc-lon').value),
+                description: document.getElementById('loc-desc').value || undefined,
+                paddlingDescription: document.getElementById('loc-paddling-desc').value || undefined,
+                images: document.getElementById('loc-images').value
+                    .split('\n')
+                    .map(s => s.trim())
+                    .filter(s => s)
+            };
+
+            if (location.images.length === 0) delete location.images;
+
+            locations.push(location);
+            saveData();
+            renderLocationsList();
+            generateLocationsCode();
+            clearLocationForm();
+
+            alert('Location added successfully!');
+        });
+
+        function clearLocationForm() {
+            document.getElementById('location-form').reset();
+        }
+
+        function renderLocationsList() {
+            const list = document.getElementById('locations-list');
+            list.innerHTML = '<h3>Saved Locations (' + locations.length + ')</h3>';
+
+            locations.forEach((loc, index) => {
+                const div = document.createElement('div');
+                div.className = 'data-item';
+                div.innerHTML = `
+                    <div class="data-item-info">
+                        <h4>${loc.name}</h4>
+                        <p>Lat: ${loc.lat}, Lon: ${loc.lon}</p>
+                        ${loc.description ? `<p>${loc.description}</p>` : ''}
+                    </div>
+                    <div class="data-item-actions">
+                        <button class="btn btn-danger" onclick="deleteLocation(${index})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteLocation(index) {
+            if (confirm('Delete this location?')) {
+                locations.splice(index, 1);
+                saveData();
+                renderLocationsList();
+                generateLocationsCode();
+            }
+        }
+
+        function generateLocationsCode() {
+            const code = `const SAVED_LOCATIONS = ${JSON.stringify(locations, null, 4)};`;
+            document.getElementById('locations-output').textContent = code;
+        }
+
+        // Route Form
+        document.getElementById('route-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const route = {
+                name: document.getElementById('route-name').value,
+                lat: parseFloat(document.getElementById('route-lat').value),
+                lon: parseFloat(document.getElementById('route-lon').value),
+                url: document.getElementById('route-url').value,
+                type: document.getElementById('route-type').value,
+                description: document.getElementById('route-description').value || undefined,
+                distance: document.getElementById('route-distance').value || undefined,
+                difficulty: document.getElementById('route-difficulty').value || undefined,
+                goodConditions: document.getElementById('route-good-conditions').value || undefined,
+                trickyConditions: document.getElementById('route-tricky-conditions').value || undefined
+            };
+
+            routes.push(route);
+            saveData();
+            renderRoutesList();
+            generateRoutesCode();
+            clearRouteForm();
+
+            alert('Route added successfully!');
+        });
+
+        function clearRouteForm() {
+            document.getElementById('route-form').reset();
+        }
+
+        function renderRoutesList() {
+            const list = document.getElementById('routes-list');
+            list.innerHTML = '<h3>Saved Routes (' + routes.length + ')</h3>';
+
+            routes.forEach((route, index) => {
+                const div = document.createElement('div');
+                div.className = 'data-item';
+                div.innerHTML = `
+                    <div class="data-item-info">
+                        <h4>${route.name}</h4>
+                        <p>${route.distance || 'Distance not specified'} - ${route.difficulty || 'Difficulty not specified'}</p>
+                        <p>Lat: ${route.lat}, Lon: ${route.lon}</p>
+                    </div>
+                    <div class="data-item-actions">
+                        <button class="btn btn-danger" onclick="deleteRoute(${index})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteRoute(index) {
+            if (confirm('Delete this route?')) {
+                routes.splice(index, 1);
+                saveData();
+                renderRoutesList();
+                generateRoutesCode();
+            }
+        }
+
+        function generateRoutesCode() {
+            const code = `const KAYAKING_ROUTES = ${JSON.stringify(routes, null, 4)};`;
+            document.getElementById('routes-output').textContent = code;
+        }
+
+        // Parking Form
+        document.getElementById('parking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const park = {
+                name: document.getElementById('park-name').value,
+                lat: parseFloat(document.getElementById('park-lat').value),
+                lon: parseFloat(document.getElementById('park-lon').value),
+                description: document.getElementById('park-description').value || undefined,
+                type: document.getElementById('park-type').value || undefined
+            };
+
+            parking.push(park);
+            saveData();
+            renderParkingList();
+            generateParkingCode();
+            clearParkingForm();
+
+            alert('Parking location added successfully!');
+        });
+
+        function clearParkingForm() {
+            document.getElementById('parking-form').reset();
+        }
+
+        function renderParkingList() {
+            const list = document.getElementById('parking-list');
+            list.innerHTML = '<h3>Saved Parking (' + parking.length + ')</h3>';
+
+            parking.forEach((park, index) => {
+                const div = document.createElement('div');
+                div.className = 'data-item';
+                div.innerHTML = `
+                    <div class="data-item-info">
+                        <h4>${park.name}</h4>
+                        <p>${park.type || 'Type not specified'}</p>
+                        <p>Lat: ${park.lat}, Lon: ${park.lon}</p>
+                    </div>
+                    <div class="data-item-actions">
+                        <button class="btn btn-danger" onclick="deleteParking(${index})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteParking(index) {
+            if (confirm('Delete this parking location?')) {
+                parking.splice(index, 1);
+                saveData();
+                renderParkingList();
+                generateParkingCode();
+            }
+        }
+
+        function generateParkingCode() {
+            const code = `const CUSTOM_PARKING = ${JSON.stringify(parking, null, 4)};`;
+            document.getElementById('parking-output').textContent = code;
+        }
+
+        // Webcam Form
+        document.getElementById('webcam-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const webcam = {
+                name: document.getElementById('cam-name').value,
+                lat: parseFloat(document.getElementById('cam-lat').value),
+                lon: parseFloat(document.getElementById('cam-lon').value),
+                url: document.getElementById('cam-url').value,
+                type: document.getElementById('cam-type').value,
+                display: document.getElementById('cam-display').value
+            };
+
+            webcams.push(webcam);
+            saveData();
+            renderWebcamsList();
+            generateWebcamsCode();
+            clearWebcamForm();
+
+            alert('Webcam added successfully!');
+        });
+
+        function clearWebcamForm() {
+            document.getElementById('webcam-form').reset();
+        }
+
+        function renderWebcamsList() {
+            const list = document.getElementById('webcams-list');
+            list.innerHTML = '<h3>Saved Webcams (' + webcams.length + ')</h3>';
+
+            webcams.forEach((cam, index) => {
+                const div = document.createElement('div');
+                div.className = 'data-item';
+                div.innerHTML = `
+                    <div class="data-item-info">
+                        <h4>${cam.name}</h4>
+                        <p>${cam.type} - ${cam.display === 'embed' ? 'Embedded' : 'New Tab'}</p>
+                        <p>Lat: ${cam.lat}, Lon: ${cam.lon}</p>
+                    </div>
+                    <div class="data-item-actions">
+                        <button class="btn btn-danger" onclick="deleteWebcam(${index})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function deleteWebcam(index) {
+            if (confirm('Delete this webcam?')) {
+                webcams.splice(index, 1);
+                saveData();
+                renderWebcamsList();
+                generateWebcamsCode();
+            }
+        }
+
+        function generateWebcamsCode() {
+            const code = `const WEBCAMS = ${JSON.stringify(webcams, null, 4)};`;
+            document.getElementById('webcams-output').textContent = code;
+        }
+
+        // Render all lists
+        function renderAllLists() {
+            renderLocationsList();
+            renderRoutesList();
+            renderParkingList();
+            renderWebcamsList();
+            generateLocationsCode();
+            generateRoutesCode();
+            generateParkingCode();
+            generateWebcamsCode();
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Code copied to clipboard! Paste it into your data file.');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy. Please select and copy manually.');
+            });
+        }
+
+        // Initialize on load
+        loadData();
+    </script>
+</body>
+</html>
