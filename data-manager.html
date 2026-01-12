@@ -1861,8 +1861,23 @@
             clearWebcamForm();
         });
 
+        // Add event listeners to all form inputs to mark as unsaved on change
+        function attachFormChangeListeners() {
+            const allInputs = document.querySelectorAll('input, textarea, select');
+            allInputs.forEach(input => {
+                // Skip file inputs and quick-select dropdowns (those shouldn't trigger unsaved)
+                if (input.type === 'file' || input.id.includes('quick-select')) {
+                    return;
+                }
+
+                input.addEventListener('input', markUnsaved);
+                input.addEventListener('change', markUnsaved);
+            });
+        }
+
         // Initialize on load
         loadData();
+        attachFormChangeListeners();
 
         // Initialize maps after a short delay to ensure DOM is ready
         setTimeout(() => {
