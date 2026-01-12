@@ -1488,34 +1488,67 @@
                 try {
                     const content = e.target.result;
 
-                    // Extract array from JavaScript file
-                    const regex = new RegExp(`const\\s+${variableName}\\s*=\\s*(\\[[\\s\\S]*?\\]);`, 'm');
-                    const match = content.match(regex);
+                    // Extract array from JavaScript file - find the matching closing bracket
+                    const startPattern = `const\\s+${variableName}\\s*=\\s*\\[`;
+                    const startRegex = new RegExp(startPattern);
+                    const startMatch = content.match(startRegex);
 
-                    if (match && match[1]) {
-                        let arrayString = match[1];
+                    if (!startMatch) {
+                        alert(`Could not find ${variableName} in the file`);
+                        return;
+                    }
 
-                        // Remove JavaScript comments
-                        // Remove single-line comments
-                        arrayString = arrayString.replace(/\/\/.*$/gm, '');
-                        // Remove multi-line comments
-                        arrayString = arrayString.replace(/\/\*[\s\S]*?\*\//g, '');
+                    const startIndex = startMatch.index + startMatch[0].length - 1; // Position of opening [
 
-                        // Try to parse as JSON
-                        const data = JSON.parse(arrayString);
-                        if (Array.isArray(data)) {
-                            if (confirm(`Import ${data.length} items? This will replace your current data.`)) {
-                                callback(data);
+                    // Find matching closing bracket
+                    let bracketCount = 0;
+                    let endIndex = -1;
+                    for (let i = startIndex; i < content.length; i++) {
+                        if (content[i] === '[') bracketCount++;
+                        if (content[i] === ']') {
+                            bracketCount--;
+                            if (bracketCount === 0) {
+                                endIndex = i;
+                                break;
                             }
-                        } else {
-                            alert('Invalid file format: data is not an array');
+                        }
+                    }
+
+                    if (endIndex === -1) {
+                        alert('Could not find matching closing bracket in the file');
+                        return;
+                    }
+
+                    let arrayString = content.substring(startIndex, endIndex + 1);
+
+                    // Remove JavaScript comments more carefully
+                    // Remove single-line comments (but not URLs)
+                    arrayString = arrayString.replace(/([^:]|^)\/\/.*$/gm, '$1');
+                    // Remove multi-line comments
+                    arrayString = arrayString.replace(/\/\*[\s\S]*?\*\//g, '');
+
+                    console.log('Attempting to parse:', arrayString.substring(0, 200) + '...');
+
+                    // Try to evaluate as JavaScript (safe because it's user's own file)
+                    let data;
+                    try {
+                        // Use Function constructor to safely evaluate the array
+                        data = new Function('return ' + arrayString)();
+                    } catch (evalError) {
+                        // If that fails, try JSON.parse
+                        data = JSON.parse(arrayString);
+                    }
+                    if (Array.isArray(data)) {
+                        if (confirm(`Import ${data.length} items? This will replace your current data.`)) {
+                            callback(data);
                         }
                     } else {
-                        alert(`Could not find ${variableName} in the file`);
+                        alert('Invalid file format: data is not an array');
                     }
                 } catch (error) {
                     console.error('Import error:', error);
-                    alert('Error reading file: ' + error.message + '\n\nThe file may contain invalid JavaScript syntax or comments that cannot be parsed.');
+                    console.error('Failed content preview:', error.message);
+                    alert('Error reading file at position ' + error.message + '\n\nTip: Check the browser console (F12) for more details.\n\nThe file may contain:\n- Trailing commas\n- Unquoted property names\n- Other JavaScript-only syntax');
                 }
             };
             reader.readAsText(file);
