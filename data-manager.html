@@ -1004,6 +1004,12 @@
             savedParking = JSON.parse(JSON.stringify(parking));
             savedWebcams = JSON.parse(JSON.stringify(webcams));
 
+            // Update dropdowns to reflect any changes
+            updateLocationQuickSelect();
+            updateRouteQuickSelect();
+            updateParkingQuickSelect();
+            updateWebcamQuickSelect();
+
             markSaved();
             alert('✅ Changes saved successfully!');
         }
@@ -1020,9 +1026,21 @@
             parking = JSON.parse(JSON.stringify(savedParking));
             webcams = JSON.parse(JSON.stringify(savedWebcams));
 
+            // Cancel any edit modes and clear forms
+            cancelLocationEdit();
+            cancelRouteEdit();
+            cancelParkingEdit();
+            cancelWebcamEdit();
+
+            // Re-render everything and update dropdowns
             markSaved();
             renderAllLists();
-            alert('Changes discarded');
+            updateLocationQuickSelect();
+            updateRouteQuickSelect();
+            updateParkingQuickSelect();
+            updateWebcamQuickSelect();
+
+            alert('✅ Changes discarded - reverted to last saved state');
         }
 
         // Warn before leaving with unsaved changes
