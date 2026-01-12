@@ -415,16 +415,17 @@
             position: sticky;
             top: 0;
             z-index: 9999;
-            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             padding: 15px 30px;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease;
         }
 
-        .save-bar.active {
-            display: flex;
+        .save-bar.unsaved {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
         }
 
         .save-bar-content {
@@ -437,6 +438,9 @@
 
         .save-bar-icon {
             font-size: 1.5rem;
+        }
+
+        .save-bar.unsaved .save-bar-icon {
             animation: pulse 2s infinite;
         }
 
@@ -462,9 +466,14 @@
             transition: all 0.3s ease;
         }
 
-        .btn-save:hover {
+        .btn-save:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-discard {
@@ -478,8 +487,13 @@
             transition: all 0.3s ease;
         }
 
-        .btn-discard:hover {
+        .btn-discard:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-discard:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .quick-edit-section {
@@ -528,12 +542,12 @@
 
         <div class="save-bar" id="save-bar">
             <div class="save-bar-content">
-                <span class="save-bar-icon">⚠️</span>
-                <span>You have unsaved changes</span>
+                <span class="save-bar-icon" id="save-bar-icon">✓</span>
+                <span id="save-bar-message">All changes saved</span>
             </div>
             <div class="save-bar-actions">
-                <button class="btn-save" onclick="saveAllChanges()">💾 Save Changes</button>
-                <button class="btn-discard" onclick="discardChanges()">Discard</button>
+                <button class="btn-save" onclick="saveAllChanges()" id="btn-save" disabled>💾 Save Changes</button>
+                <button class="btn-discard" onclick="discardChanges()" id="btn-discard" disabled>Discard</button>
             </div>
         </div>
 
@@ -959,7 +973,22 @@
         // Mark changes as unsaved
         function markUnsaved() {
             hasUnsavedChanges = true;
-            document.getElementById('save-bar').classList.add('active');
+            const saveBar = document.getElementById('save-bar');
+            saveBar.classList.add('unsaved');
+            document.getElementById('save-bar-icon').textContent = '⚠️';
+            document.getElementById('save-bar-message').textContent = 'You have unsaved changes';
+            document.getElementById('btn-save').disabled = false;
+            document.getElementById('btn-discard').disabled = false;
+        }
+
+        function markSaved() {
+            hasUnsavedChanges = false;
+            const saveBar = document.getElementById('save-bar');
+            saveBar.classList.remove('unsaved');
+            document.getElementById('save-bar-icon').textContent = '✓';
+            document.getElementById('save-bar-message').textContent = 'All changes saved';
+            document.getElementById('btn-save').disabled = true;
+            document.getElementById('btn-discard').disabled = true;
         }
 
         // Save all changes to localStorage
@@ -975,9 +1004,7 @@
             savedParking = JSON.parse(JSON.stringify(parking));
             savedWebcams = JSON.parse(JSON.stringify(webcams));
 
-            hasUnsavedChanges = false;
-            document.getElementById('save-bar').classList.remove('active');
-
+            markSaved();
             alert('✅ Changes saved successfully!');
         }
 
@@ -993,9 +1020,7 @@
             parking = JSON.parse(JSON.stringify(savedParking));
             webcams = JSON.parse(JSON.stringify(savedWebcams));
 
-            hasUnsavedChanges = false;
-            document.getElementById('save-bar').classList.remove('active');
-
+            markSaved();
             renderAllLists();
             alert('Changes discarded');
         }
@@ -1586,6 +1611,7 @@
                 savedLocations = JSON.parse(JSON.stringify(locations));
                 renderLocationsList();
                 generateLocationsCode();
+                markSaved();
                 alert('Locations imported successfully!');
             }, 'SAVED_LOCATIONS');
         }
@@ -1597,6 +1623,7 @@
                 savedRoutes = JSON.parse(JSON.stringify(routes));
                 renderRoutesList();
                 generateRoutesCode();
+                markSaved();
                 alert('Routes imported successfully!');
             }, 'KAYAKING_ROUTES');
         }
@@ -1608,6 +1635,7 @@
                 savedParking = JSON.parse(JSON.stringify(parking));
                 renderParkingList();
                 generateParkingCode();
+                markSaved();
                 alert('Parking locations imported successfully!');
             }, 'CUSTOM_PARKING');
         }
@@ -1619,6 +1647,7 @@
                 savedWebcams = JSON.parse(JSON.stringify(webcams));
                 renderWebcamsList();
                 generateWebcamsCode();
+                markSaved();
                 alert('Webcams imported successfully!');
             }, 'WEBCAMS');
         }
