@@ -1194,6 +1194,7 @@
             clearLocationForm();
             document.getElementById('location-submit-btn').textContent = 'Add Location';
             document.getElementById('location-edit-mode').classList.remove('active');
+            document.getElementById('location-quick-select').value = '';
         }
 
         function editRoute(index) {
@@ -1230,6 +1231,7 @@
             clearRouteForm();
             document.getElementById('route-submit-btn').textContent = 'Add Route';
             document.getElementById('route-edit-mode').classList.remove('active');
+            document.getElementById('route-quick-select').value = '';
         }
 
         function editParking(index) {
@@ -1261,6 +1263,7 @@
             clearParkingForm();
             document.getElementById('parking-submit-btn').textContent = 'Add Parking';
             document.getElementById('parking-edit-mode').classList.remove('active');
+            document.getElementById('parking-quick-select').value = '';
         }
 
         function editWebcam(index) {
@@ -1293,6 +1296,7 @@
             clearWebcamForm();
             document.getElementById('webcam-submit-btn').textContent = 'Add Webcam';
             document.getElementById('webcam-edit-mode').classList.remove('active');
+            document.getElementById('webcam-quick-select').value = '';
         }
 
         // === MAP PREVIEW FUNCTIONS ===
@@ -1647,6 +1651,11 @@
         // Initialize maps after a short delay to ensure DOM is ready
         setTimeout(() => {
             initMaps();
+            // Also ensure dropdowns are populated
+            updateLocationQuickSelect();
+            updateRouteQuickSelect();
+            updateParkingQuickSelect();
+            updateWebcamQuickSelect();
         }, 100);
     </script>
 </body>
