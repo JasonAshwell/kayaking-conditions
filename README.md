@@ -64,6 +64,7 @@ WorldTides requires a free API key (1000 requests/month, permanently free):
 
 **Features:**
 - 📍 **Click to drop pins** on interactive maps
+- ⚡ **Quick-select dropdown** to instantly load entries for editing
 - ✏️ **Edit existing entries** with ease
 - 💾 **Import/Export files** directly
 - 📋 **Copy to clipboard** or download files

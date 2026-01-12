@@ -31,10 +31,15 @@ The **Data Manager** is a web-based portal for easily managing all your kayaking
 4. Continue filling out the rest of the form
 
 ### ✏️ Edit Existing Entries
-- Click "Edit" button on any entry to modify it
+- **Quick Select Dropdown**: Select from dropdown at top of each tab to instantly load an entry for editing
+- **Or Click "Edit"**: Click the Edit button on any entry in the list
 - Form populates with existing data
 - Submit button changes to "Update"
 - Cancel editing anytime
+
+**Two ways to edit:**
+1. **Quick Select** (fastest): Use the green dropdown at the top → select entry → auto-loads
+2. **Scroll & Click**: Scroll to the entry in the list → click "Edit" button
 
 ### 🗺️ Live Map Preview
 - Interactive map shows your coordinates as you type

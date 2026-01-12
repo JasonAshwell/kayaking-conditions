@@ -410,6 +410,42 @@
         .form-mode-indicator strong {
             color: #856404;
         }
+
+        .quick-edit-section {
+            background: #e8f5e9;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quick-edit-section h4 {
+            color: #1e7e34;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .quick-edit-section select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #28a745;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .quick-edit-section select:focus {
+            outline: none;
+            border-color: #1e7e34;
+        }
+
+        .quick-edit-hint {
+            font-size: 0.85rem;
+            color: #2d5016;
+            margin-top: 8px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -438,6 +474,14 @@
                     <input type="file" accept=".js" onchange="importLocationsFile(event)">
                 </label>
                 <button class="btn btn-success" onclick="downloadLocationsFile()">💾 Download File</button>
+            </div>
+
+            <div class="quick-edit-section">
+                <h4>⚡ Quick Edit</h4>
+                <select id="location-quick-select" onchange="quickEditLocation()">
+                    <option value="">-- Select a location to edit --</option>
+                </select>
+                <div class="quick-edit-hint">Select a location from the dropdown to quickly load it for editing</div>
             </div>
 
             <div class="form-section">
@@ -517,6 +561,14 @@
                     <input type="file" accept=".js" onchange="importRoutesFile(event)">
                 </label>
                 <button class="btn btn-success" onclick="downloadRoutesFile()">💾 Download File</button>
+            </div>
+
+            <div class="quick-edit-section">
+                <h4>⚡ Quick Edit</h4>
+                <select id="route-quick-select" onchange="quickEditRoute()">
+                    <option value="">-- Select a route to edit --</option>
+                </select>
+                <div class="quick-edit-hint">Select a route from the dropdown to quickly load it for editing</div>
             </div>
 
             <div class="form-section">
@@ -630,6 +682,14 @@
                 <button class="btn btn-success" onclick="downloadParkingFile()">💾 Download File</button>
             </div>
 
+            <div class="quick-edit-section">
+                <h4>⚡ Quick Edit</h4>
+                <select id="parking-quick-select" onchange="quickEditParking()">
+                    <option value="">-- Select a parking location to edit --</option>
+                </select>
+                <div class="quick-edit-hint">Select a parking location from the dropdown to quickly load it for editing</div>
+            </div>
+
             <div class="form-section">
                 <h3>Add/Edit Parking</h3>
                 <div class="form-mode-indicator" id="parking-edit-mode">
@@ -706,6 +766,14 @@
                     <input type="file" accept=".js" onchange="importWebcamsFile(event)">
                 </label>
                 <button class="btn btn-success" onclick="downloadWebcamsFile()">💾 Download File</button>
+            </div>
+
+            <div class="quick-edit-section">
+                <h4>⚡ Quick Edit</h4>
+                <select id="webcam-quick-select" onchange="quickEditWebcam()">
+                    <option value="">-- Select a webcam to edit --</option>
+                </select>
+                <div class="quick-edit-hint">Select a webcam from the dropdown to quickly load it for editing</div>
             </div>
 
             <div class="form-section">
@@ -838,6 +906,29 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Update quick-select dropdown
+            updateLocationQuickSelect();
+        }
+
+        function updateLocationQuickSelect() {
+            const select = document.getElementById('location-quick-select');
+            select.innerHTML = '<option value="">-- Select a location to edit --</option>';
+
+            locations.forEach((loc, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = loc.name + ' (' + loc.lat.toFixed(4) + ', ' + loc.lon.toFixed(4) + ')';
+                select.appendChild(option);
+            });
+        }
+
+        function quickEditLocation() {
+            const select = document.getElementById('location-quick-select');
+            const index = parseInt(select.value);
+            if (!isNaN(index)) {
+                editLocation(index);
+            }
         }
 
         function deleteLocation(index) {
@@ -878,6 +969,29 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Update quick-select dropdown
+            updateRouteQuickSelect();
+        }
+
+        function updateRouteQuickSelect() {
+            const select = document.getElementById('route-quick-select');
+            select.innerHTML = '<option value="">-- Select a route to edit --</option>';
+
+            routes.forEach((route, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = route.name + ' - ' + (route.distance || 'No distance');
+                select.appendChild(option);
+            });
+        }
+
+        function quickEditRoute() {
+            const select = document.getElementById('route-quick-select');
+            const index = parseInt(select.value);
+            if (!isNaN(index)) {
+                editRoute(index);
+            }
         }
 
         function deleteRoute(index) {
@@ -918,6 +1032,29 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Update quick-select dropdown
+            updateParkingQuickSelect();
+        }
+
+        function updateParkingQuickSelect() {
+            const select = document.getElementById('parking-quick-select');
+            select.innerHTML = '<option value="">-- Select a parking location to edit --</option>';
+
+            parking.forEach((park, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = park.name + ' - ' + (park.type || 'Type not specified');
+                select.appendChild(option);
+            });
+        }
+
+        function quickEditParking() {
+            const select = document.getElementById('parking-quick-select');
+            const index = parseInt(select.value);
+            if (!isNaN(index)) {
+                editParking(index);
+            }
         }
 
         function deleteParking(index) {
@@ -958,6 +1095,29 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Update quick-select dropdown
+            updateWebcamQuickSelect();
+        }
+
+        function updateWebcamQuickSelect() {
+            const select = document.getElementById('webcam-quick-select');
+            select.innerHTML = '<option value="">-- Select a webcam to edit --</option>';
+
+            webcams.forEach((cam, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = cam.name + ' - ' + cam.type;
+                select.appendChild(option);
+            });
+        }
+
+        function quickEditWebcam() {
+            const select = document.getElementById('webcam-quick-select');
+            const index = parseInt(select.value);
+            if (!isNaN(index)) {
+                editWebcam(index);
+            }
         }
 
         function deleteWebcam(index) {
