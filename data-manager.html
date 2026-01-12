@@ -411,6 +411,77 @@
             color: #856404;
         }
 
+        .save-bar {
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            padding: 15px 30px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .save-bar.active {
+            display: flex;
+        }
+
+        .save-bar-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .save-bar-icon {
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .save-bar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-save {
+            background: white;
+            color: #28a745;
+            font-weight: 700;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-discard {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-discard:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         .quick-edit-section {
             background: #e8f5e9;
             border: 2px solid #28a745;
@@ -453,6 +524,17 @@
         <div class="header">
             <h1>🛶 Kayaking Data Manager</h1>
             <p>Manage locations, routes, parking, and webcams with an easy-to-use interface</p>
+        </div>
+
+        <div class="save-bar" id="save-bar">
+            <div class="save-bar-content">
+                <span class="save-bar-icon">⚠️</span>
+                <span>You have unsaved changes</span>
+            </div>
+            <div class="save-bar-actions">
+                <button class="btn-save" onclick="saveAllChanges()">💾 Save Changes</button>
+                <button class="btn-discard" onclick="discardChanges()">Discard</button>
+            </div>
         </div>
 
         <div class="tabs">
@@ -851,6 +933,13 @@
         let parking = [];
         let webcams = [];
 
+        // Unsaved changes tracking
+        let hasUnsavedChanges = false;
+        let savedLocations = [];
+        let savedRoutes = [];
+        let savedParking = [];
+        let savedWebcams = [];
+
         // Load data from localStorage
         function loadData() {
             locations = JSON.parse(localStorage.getItem('kayaking_locations') || '[]');
@@ -858,16 +947,67 @@
             parking = JSON.parse(localStorage.getItem('kayaking_parking') || '[]');
             webcams = JSON.parse(localStorage.getItem('kayaking_webcams') || '[]');
 
+            // Save a copy for comparison
+            savedLocations = JSON.parse(JSON.stringify(locations));
+            savedRoutes = JSON.parse(JSON.stringify(routes));
+            savedParking = JSON.parse(JSON.stringify(parking));
+            savedWebcams = JSON.parse(JSON.stringify(webcams));
+
             renderAllLists();
         }
 
-        // Save data to localStorage
-        function saveData() {
+        // Mark changes as unsaved
+        function markUnsaved() {
+            hasUnsavedChanges = true;
+            document.getElementById('save-bar').classList.add('active');
+        }
+
+        // Save all changes to localStorage
+        function saveAllChanges() {
             localStorage.setItem('kayaking_locations', JSON.stringify(locations));
             localStorage.setItem('kayaking_routes', JSON.stringify(routes));
             localStorage.setItem('kayaking_parking', JSON.stringify(parking));
             localStorage.setItem('kayaking_webcams', JSON.stringify(webcams));
+
+            // Update saved copies
+            savedLocations = JSON.parse(JSON.stringify(locations));
+            savedRoutes = JSON.parse(JSON.stringify(routes));
+            savedParking = JSON.parse(JSON.stringify(parking));
+            savedWebcams = JSON.parse(JSON.stringify(webcams));
+
+            hasUnsavedChanges = false;
+            document.getElementById('save-bar').classList.remove('active');
+
+            alert('✅ Changes saved successfully!');
         }
+
+        // Discard changes
+        function discardChanges() {
+            if (!confirm('Are you sure you want to discard all unsaved changes?')) {
+                return;
+            }
+
+            // Restore from saved copies
+            locations = JSON.parse(JSON.stringify(savedLocations));
+            routes = JSON.parse(JSON.stringify(savedRoutes));
+            parking = JSON.parse(JSON.stringify(savedParking));
+            webcams = JSON.parse(JSON.stringify(savedWebcams));
+
+            hasUnsavedChanges = false;
+            document.getElementById('save-bar').classList.remove('active');
+
+            renderAllLists();
+            alert('Changes discarded');
+        }
+
+        // Warn before leaving with unsaved changes
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
 
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
@@ -934,7 +1074,7 @@
         function deleteLocation(index) {
             if (confirm('Delete this location?')) {
                 locations.splice(index, 1);
-                saveData();
+                markUnsaved();
                 renderLocationsList();
                 generateLocationsCode();
             }
@@ -997,7 +1137,7 @@
         function deleteRoute(index) {
             if (confirm('Delete this route?')) {
                 routes.splice(index, 1);
-                saveData();
+                markUnsaved();
                 renderRoutesList();
                 generateRoutesCode();
             }
@@ -1060,7 +1200,7 @@
         function deleteParking(index) {
             if (confirm('Delete this parking location?')) {
                 parking.splice(index, 1);
-                saveData();
+                markUnsaved();
                 renderParkingList();
                 generateParkingCode();
             }
@@ -1123,7 +1263,7 @@
         function deleteWebcam(index) {
             if (confirm('Delete this webcam?')) {
                 webcams.splice(index, 1);
-                saveData();
+                markUnsaved();
                 renderWebcamsList();
                 generateWebcamsCode();
             }
@@ -1442,7 +1582,8 @@
         function importLocationsFile(event) {
             importFile(event, (data) => {
                 locations = data;
-                saveData();
+                localStorage.setItem('kayaking_locations', JSON.stringify(locations));
+                savedLocations = JSON.parse(JSON.stringify(locations));
                 renderLocationsList();
                 generateLocationsCode();
                 alert('Locations imported successfully!');
@@ -1452,7 +1593,8 @@
         function importRoutesFile(event) {
             importFile(event, (data) => {
                 routes = data;
-                saveData();
+                localStorage.setItem('kayaking_routes', JSON.stringify(routes));
+                savedRoutes = JSON.parse(JSON.stringify(routes));
                 renderRoutesList();
                 generateRoutesCode();
                 alert('Routes imported successfully!');
@@ -1462,7 +1604,8 @@
         function importParkingFile(event) {
             importFile(event, (data) => {
                 parking = data;
-                saveData();
+                localStorage.setItem('kayaking_parking', JSON.stringify(parking));
+                savedParking = JSON.parse(JSON.stringify(parking));
                 renderParkingList();
                 generateParkingCode();
                 alert('Parking locations imported successfully!');
@@ -1472,7 +1615,8 @@
         function importWebcamsFile(event) {
             importFile(event, (data) => {
                 webcams = data;
-                saveData();
+                localStorage.setItem('kayaking_webcams', JSON.stringify(webcams));
+                savedWebcams = JSON.parse(JSON.stringify(webcams));
                 renderWebcamsList();
                 generateWebcamsCode();
                 alert('Webcams imported successfully!');
@@ -1589,7 +1733,7 @@
                 alert('Location added successfully!');
             }
 
-            saveData();
+            markUnsaved();
             renderLocationsList();
             generateLocationsCode();
             clearLocationForm();
@@ -1623,7 +1767,7 @@
                 alert('Route added successfully!');
             }
 
-            saveData();
+            markUnsaved();
             renderRoutesList();
             generateRoutesCode();
             clearRouteForm();
@@ -1652,7 +1796,7 @@
                 alert('Parking location added successfully!');
             }
 
-            saveData();
+            markUnsaved();
             renderParkingList();
             generateParkingCode();
             clearParkingForm();
@@ -1682,7 +1826,7 @@
                 alert('Webcam added successfully!');
             }
 
-            saveData();
+            markUnsaved();
             renderWebcamsList();
             generateWebcamsCode();
             clearWebcamForm();
